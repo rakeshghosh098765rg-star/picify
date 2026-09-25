@@ -1,0 +1,2412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Picify by Soumi Dutta | Custom Art Studio & Keepsakes</title>
+  <meta name="description" content="Handcrafted personalized memory boards, Teachers' Day customized keepsakes, watercolor portraits, and artistic frames by Soumi Dutta in Majdia." />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & CYBER-LUXE DARK THEME
+       ========================================================================== */
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: rgba(14, 18, 27, 0.78);
+      --bg-card-hover: rgba(22, 28, 42, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      
+      /* Neon Glow Accents */
+      --neon-cyan: #00f0ff;
+      --neon-pink: #ff2a85;
+      --neon-gold: #ffc837;
+      --neon-purple: #8b5cf6;
+      --neon-emerald: #10b981;
+      
+      --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.45), 0 0 35px rgba(0, 240, 255, 0.2);
+      --glow-pink: 0 0 15px rgba(255, 42, 133, 0.45), 0 0 35px rgba(255, 42, 133, 0.2);
+      --glow-gold: 0 0 15px rgba(255, 200, 55, 0.45), 0 0 30px rgba(255, 200, 55, 0.2);
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Cinzel', serif;
+      --font-art: 'Playfair Display', serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    /* Ambient Particle Canvas */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.65;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Typography & Glows */
+    .glow-cyan-text {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.6), 0 0 25px rgba(0, 240, 255, 0.35);
+    }
+
+    .glow-pink-text {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 42, 133, 0.6), 0 0 25px rgba(255, 42, 133, 0.35);
+    }
+
+    .glow-gold-text {
+      color: var(--neon-gold);
+      text-shadow: 0 0 10px rgba(255, 200, 55, 0.6), 0 0 25px rgba(255, 200, 55, 0.35);
+    }
+
+    .gradient-shimmer {
+      background: linear-gradient(135deg, #ffffff 10%, #00f0ff 45%, #ff2a85 85%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmerFlow 8s ease infinite alternate;
+      background-size: 200% 200%;
+    }
+
+    @keyframes shimmerFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    /* ==========================================================================
+       2. TOP NAVIGATION & OWNER CMS BAR
+       ========================================================================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      background: rgba(7, 9, 14, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 76px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-container {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #121824, #1a2332);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-monogram {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+    }
+
+    .logo-image-render {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-glow-cyan {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .btn-glow-cyan:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 25px var(--neon-cyan);
+      transform: translateY(-2px);
+    }
+
+    .btn-glow-pink {
+      background: rgba(255, 42, 133, 0.12);
+      border-color: var(--neon-pink);
+      color: #ffffff;
+      box-shadow: var(--glow-pink);
+    }
+
+    .btn-glow-pink:hover {
+      background: var(--neon-pink);
+      color: #fff;
+      box-shadow: 0 0 25px var(--neon-pink);
+      transform: translateY(-2px);
+    }
+
+    .btn-dark {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-subtle);
+      color: var(--text-main);
+    }
+
+    .btn-dark:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+    }
+
+    /* Owner CMS Control Banner */
+    .owner-banner {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), rgba(0, 240, 255, 0.15));
+      border-bottom: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 10px 0;
+      display: none;
+    }
+
+    .owner-banner.active {
+      display: block;
+    }
+
+    .owner-banner-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.85rem;
+    }
+
+    .owner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.25);
+      border: 1px solid var(--neon-emerald);
+      color: #34d399;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       3. HERO & STUDIO STATS
+       ========================================================================== */
+    .hero {
+      padding: 70px 0 50px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-pretitle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 42, 133, 0.1);
+      border: 1px solid rgba(255, 42, 133, 0.4);
+      color: var(--neon-pink);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(255, 42, 133, 0.15);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.3rem, 5.5vw, 4.4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    .hero-desc {
+      max-width: 740px;
+      margin: 0 auto 35px;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    .creator-pills {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .creator-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-size: 0.86rem;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      backdrop-filter: blur(10px);
+    }
+
+    .creator-pill span {
+      color: var(--neon-cyan);
+    }
+
+    /* ==========================================================================
+       4. GALLERY SHOWCASE & SLOT REPLACEMENT
+       ========================================================================== */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 60px 0 25px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .gallery-filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 28px;
+    }
+
+    .art-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .art-card:hover {
+      transform: translateY(-7px);
+      border-color: rgba(0, 240, 255, 0.5);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), var(--glow-cyan);
+    }
+
+    .art-media-wrap {
+      position: relative;
+      width: 100%;
+      height: 290px;
+      overflow: hidden;
+      background: #0d121c;
+      cursor: pointer;
+    }
+
+    .art-media-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .art-card:hover .art-media-wrap img {
+      transform: scale(1.06);
+    }
+
+    .ribbon-tag {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: linear-gradient(135deg, rgba(255, 42, 133, 0.92), rgba(139, 92, 246, 0.92));
+      color: #fff;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: 20px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      z-index: 2;
+    }
+
+    .category-badge {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(7, 9, 14, 0.88);
+      border: 1px solid var(--border-subtle);
+      color: var(--neon-cyan);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      backdrop-filter: blur(6px);
+      z-index: 2;
+    }
+
+    .art-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .art-title {
+      font-family: var(--font-art);
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .art-description {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 18px;
+      flex-grow: 1;
+    }
+
+    .art-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 14px;
+    }
+
+    .art-price {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--neon-gold);
+    }
+
+    /* Admin Card Controls */
+    .admin-card-bar {
+      display: none;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    body.owner-logged-in .admin-card-bar {
+      display: flex;
+    }
+
+    /* ==========================================================================
+       5. CUSTOM COMMISSION BUILDER & GPS CAPTURE
+       ========================================================================== */
+    .order-section {
+      margin: 80px 0;
+      background: linear-gradient(145deg, rgba(14, 18, 27, 0.9), rgba(20, 26, 40, 0.75));
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 45px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .order-section::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(255, 42, 133, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .order-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 40px;
+    }
+
+    .order-info h3 {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      margin-bottom: 14px;
+    }
+
+    .steps-list {
+      list-style: none;
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid var(--neon-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--neon-cyan);
+      flex-shrink: 0;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(7, 9, 14, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+    }
+
+    /* Live Price Estimator Box */
+    .order-price-display-box {
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .order-price-val {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    /* Live GPS Satellite Card */
+    .location-box {
+      background: rgba(7, 9, 14, 0.85);
+      border: 1px dashed rgba(0, 240, 255, 0.4);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .gps-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .gps-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gps-badge.active {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .gps-coords-display {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--neon-cyan);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: none;
+      word-break: break-all;
+      margin-top: 8px;
+    }
+
+    /* ==========================================================================
+       6. REVIEWS & TESTIMONIALS
+       ========================================================================== */
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
+
+    .feedback-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      position: relative;
+    }
+
+    .rating-stars {
+      color: var(--neon-gold);
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .feedback-text {
+      font-style: italic;
+      color: #e2e8f0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .feedback-author {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 10px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       7. MODALS, POPUPS & TOAST
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 5, 8, 0.88);
+      backdrop-filter: blur(12px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: #0f141f;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: var(--radius-md);
+      width: 100%;
+      max-width: 540px;
+      padding: 30px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 240, 255, 0.15);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--neon-pink);
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(15, 20, 31, 0.95);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 0.9rem;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(120px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #toast-notification.show {
+      transform: translateY(0);
+    }
+
+    /* Category Table in CMS Modal */
+    .cat-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 0.88rem;
+    }
+
+    .cat-table th, .cat-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+
+    .cat-table th {
+      color: var(--neon-cyan);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 50px 0 30px;
+      margin-top: 100px;
+      background: #05070a;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 860px) {
+      .order-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        display: none;
+      }
+      .order-section {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Particle Stardust Canvas -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <!-- OWNER ACTIVE BAR (Shows only when Soumi is logged in) -->
+  <div id="owner-banner" class="owner-banner">
+    <div class="wrapper owner-banner-content">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="owner-badge">● OWNER ACTIVE: Soumi Dutta</span>
+        <span style="color:var(--text-muted); font-size:0.8rem;">Studio Manager Unlocked</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-glow-cyan btn-sm" onclick="openNewUploadModal()">+ Upload Work</button>
+        <button class="btn btn-dark btn-sm" onclick="openCategoriesModal()">🏷️ Categories & Prices</button>
+        <button class="btn btn-dark btn-sm" onclick="openBrandingModal()">🎨 Branding & Phone</button>
+        <button class="btn btn-dark btn-sm" onclick="openCredsModal()">⚙️ Password</button>
+        <button class="btn btn-dark btn-sm" onclick="logoutOwner()">Log Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header>
+    <div class="wrapper nav-container">
+      <a href="#" class="brand-logo">
+        <div class="logo-container" id="logo-render-box">
+          <span class="logo-monogram" id="logo-text-render">P</span>
+        </div>
+        <div>
+          <div class="brand-title gradient-shimmer" id="nav-brand-title">PICIFY</div>
+          <div class="brand-subtitle" id="nav-brand-subtitle">Soumi Dutta Studio • Majdia</div>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#showcase">Artwork Gallery</a></li>
+        <li><a href="#order">Order with GPS</a></li>
+        <li><a href="#feedback">Reviews</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-glow-cyan" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+          Order Custom Frame
+        </button>
+        <button id="owner-key-btn" class="btn btn-dark btn-sm" onclick="openLoginModal()" title="Studio Owner Portal">
+          🔒 Owner
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="wrapper hero">
+    <div class="hero-pretitle">✨ Handcrafted Keepsakes & Memory Frames</div>
+    <h1 class="hero-title" id="hero-title-render">
+      Every Soul Deserves <br />
+      <span class="glow-cyan-text">An Everlasting Glow</span>
+    </h1>
+    <p class="hero-desc" id="hero-desc-render">
+      Specializing in Teachers' Day customized keepsakes, personalized "Mrs. Boss Lady" watercolor portraits, 
+      ribbon boulevard vehicle memory boards, and tailored romantic frames.
+    </p>
+
+    <!-- Verified Studio Highlights -->
+    <div class="creator-pills">
+      <div class="creator-pill">
+        <span>📍</span> Lives in Majdia, India
+      </div>
+      <div class="creator-pill">
+        <span>⭐</span> 100% Recommend (Facebook Verified)
+      </div>
+      <div class="creator-pill">
+        <span>🕒</span> Always Open for Orders
+      </div>
+      <div class="creator-pill">
+        <span>🎀</span> Hand-Tied Satin Ribbon Accents
+      </div>
+    </div>
+  </section>
+
+  <!-- ARTWORK SHOWCASE & REAL PHOTO SLOTS -->
+  <section id="showcase" class="wrapper">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Exclusive <span class="glow-pink-text">Showcase</span></h2>
+        <p class="section-subtitle">Browse handcrafted creations. Soumi can replace any slot or add new posts anytime.</p>
+      </div>
+      <div id="owner-upload-trigger" style="display:none;">
+        <button class="btn btn-glow-pink" onclick="openNewUploadModal()">+ Add New Artwork Post</button>
+      </div>
+    </div>
+
+    <!-- Category Filter Tabs (Dynamic) -->
+    <div class="gallery-filter-bar" id="gallery-filter-tabs">
+      <!-- Injected by JavaScript -->
+    </div>
+
+    <!-- Live Gallery Grid -->
+    <div id="gallery-grid" class="gallery-grid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </section>
+
+  <!-- CUSTOM COMMISSION ORDER BUILDER WITH GPS COORDINATES DISPATCH -->
+  <section id="order" class="wrapper">
+    <div class="order-section">
+      <div class="order-grid">
+        
+        <!-- Left: Studio Details & Steps -->
+        <div class="order-info">
+          <div class="hero-pretitle" style="margin-bottom:12px;">Direct WhatsApp Commission</div>
+          <h3 class="glow-cyan-text">Get Your Personalized Frame Made</h3>
+          <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom: 20px;">
+            Soumi creates customized handmade pieces. Select your category to view current base prices, capture your exact delivery coordinates, and dispatch straight to her WhatsApp.
+          </p>
+
+          <ul class="steps-list">
+            <li class="step-item">
+              <div class="step-icon">1</div>
+              <div>
+                <strong style="color:#fff;">Choose Artwork & Dimension</strong>
+                <p style="color:var(--text-muted); font-size:0.8rem;">Real-time price estimator computes the total based on Soumi's current rates.</p>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-icon">2</div>
+              <div>
+                <strong style="color:#fff;">Pinpoint Exact GPS Location</strong>
+                <p style="color:var(--text-muted); font-size:0.8rem;">One-tap satellite pinpoint generates an exact Google Maps delivery link.</p>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-icon">3</div>
+              <div>
+                <strong style="color:#fff;">Dispatched to WhatsApp</strong>
+                <p style="color:var(--text-muted); font-size:0.8rem;">Commission specifications and map pin are received immediately by Soumi.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right: Order Form & GPS Trigger -->
+        <div>
+          <form id="commission-form" onsubmit="handleOrderSubmission(event)">
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div class="form-group">
+                <label>Your Name *</label>
+                <input type="text" id="cust-name" class="form-control" placeholder="e.g. Arindam Roy" required />
+              </div>
+              <div class="form-group">
+                <label>WhatsApp Contact *</label>
+                <input type="tel" id="cust-phone" class="form-control" placeholder="e.g. 98300xxxxx" required />
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div class="form-group">
+                <label>Artwork Category *</label>
+                <select id="cust-category" class="form-control" onchange="updateLiveOrderPrice()" required>
+                  <!-- Populated dynamically from Category CMS -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Frame Dimension *</label>
+                <select id="cust-size" class="form-control" onchange="updateLiveOrderPrice()" required>
+                  <option value="A4 Mini Glass Frame (8 x 12 in)">A4 Glass Frame (8 x 12 in)</option>
+                  <option value="A3 Premium Keepsake Frame (12 x 18 in)">A3 Premium Frame (12 x 18 in)</option>
+                  <option value="Custom Cutout Board with Satin Ribbon">Custom Cutout Board with Ribbon</option>
+                  <option value="Square Desk Standee (8 x 8 in)">Square Desk Standee (8 x 8 in)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- LIVE ESTIMATED PRICE CALCULATOR BOX -->
+            <div class="order-price-display-box" id="price-calculator-box">
+              <div>
+                <div style="font-size:0.82rem; color:var(--text-muted);" id="price-box-label">Estimated Artwork Total:</div>
+                <div style="font-size:0.75rem; color:#fff;" id="price-box-breakdown">Includes Category Base Rate + Frame Size</div>
+              </div>
+              <div class="order-price-val glow-gold-text" id="live-calculated-price">₹599</div>
+            </div>
+
+            <div class="form-group">
+              <label>Custom Text / Poetry to Print on Frame</label>
+              <textarea id="cust-message" class="form-control" rows="2" placeholder="e.g. 'Never thought to do anything like that... Thank you Teacher!'"></textarea>
+            </div>
+
+            <!-- LIVE GPS LOCATION PINPOINT -->
+            <div class="location-box">
+              <div class="gps-status">
+                <span style="font-size:0.85rem; font-weight:600; color:#fff;">📍 Delivery Pinpoint (Live Satellite GPS)</span>
+                <span id="gps-indicator" class="gps-badge">🛰️ GPS Not Attached</span>
+              </div>
+              
+              <p style="color:var(--text-muted); font-size:0.78rem; margin-bottom: 12px;">
+                Tap below to attach your exact live location so Soumi knows the delivery route in Majdia / West Bengal.
+              </p>
+
+              <button type="button" class="btn btn-dark btn-sm" id="gps-trigger-btn" onclick="captureLiveLocation()">
+                📡 Detect My Exact GPS Coordinates
+              </button>
+
+              <div id="gps-coords-display" class="gps-coords-display"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Delivery Address & Landmark *</label>
+              <input type="text" id="cust-address" class="form-control" placeholder="House no, Street, Landmark, Town/City" required />
+            </div>
+
+            <button type="submit" class="btn btn-glow-cyan" style="width:100%; padding:14px; font-size:1rem;">
+              💬 Send Order Directly on WhatsApp
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER REVIEWS & FEEDBACK -->
+  <section id="feedback" class="wrapper">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Client <span class="glow-gold-text">Feedback</span></h2>
+        <p class="section-subtitle">Real experiences from clients who ordered customized pieces from Picify.</p>
+      </div>
+      <button class="btn btn-dark btn-sm" onclick="openReviewModal()">+ Share Your Feedback</button>
+    </div>
+
+    <div id="feedback-grid" class="feedback-grid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrapper footer-content">
+      <div>
+        <strong style="color:#fff;" id="footer-brand-title">Picify by Soumi Dutta</strong> — Handcrafted in Majdia, India.
+        <div style="font-size:0.78rem; margin-top:4px;">All rights reserved © 2026.</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="https://facebook.com/profile.php?id=100093129994222" target="_blank" style="color:var(--neon-cyan); text-decoration:none;">
+          Official Facebook Page
+        </a>
+        <span>•</span>
+        <button onclick="openLoginModal()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.82rem;">
+          Studio Owner Login
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODALS: AUTH, SLOT REPLACEMENT, CMS, REVIEWS, LIGHTBOX
+       ========================================================================== -->
+
+  <!-- 1. OWNER LOGIN MODAL -->
+  <div id="login-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('login-modal')">×</button>
+      <h3 style="font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px;" class="glow-cyan-text">
+        Picify Studio Owner Login
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
+        Restricted to Soumi Dutta for updating artwork, categories, base pricing, and phone settings.
+      </p>
+
+      <form onsubmit="handleOwnerLogin(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="owner-user-input" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="owner-pass-input" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-glow-cyan" style="width:100%; margin-top:10px;">
+          Unlock Owner Studio
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. CATEGORY & BASE PRICE CMS MODAL -->
+  <div id="category-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:620px;">
+      <button class="modal-close" onclick="closeModal('category-modal')">×</button>
+      <h3 style="font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px;" class="glow-gold-text">
+        Manage Categories & Base Prices
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;">
+        Add categories, adjust starting base prices, or delete categories. Updates sync immediately to the Order Calculator and Gallery.
+      </p>
+
+      <!-- Add New Category Form -->
+      <div style="background:rgba(255,255,255,0.03); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:20px;">
+        <label style="font-size:0.82rem; font-weight:600; display:block; margin-bottom:8px; color:var(--neon-cyan);">+ Add New Category</label>
+        <div style="display:grid; grid-template-columns:1.8fr 1fr auto; gap:10px;">
+          <input type="text" id="new-cat-name" class="form-control" placeholder="Name (e.g. Resin Art)" />
+          <input type="number" id="new-cat-price" class="form-control" placeholder="Base ₹ (e.g. 799)" />
+          <button class="btn btn-glow-cyan btn-sm" onclick="addNewCategory()">Add</button>
+        </div>
+      </div>
+
+      <!-- Existing Categories List -->
+      <div style="max-height:280px; overflow-y:auto;">
+        <table class="cat-table">
+          <thead>
+            <tr>
+              <th>Category Name</th>
+              <th>Base Price (₹)</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="category-table-body">
+            <!-- Injected by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. BRANDING, WHATSAPP PHONE & PRICING VISIBILITY MODAL -->
+  <div id="branding-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('branding-modal')">×</button>
+      <h3 style="font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px;" class="glow-cyan-text">
+        Studio Branding & Phone Settings
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
+        Change your WhatsApp order recipient number, logo, studio subtitles, or toggle global price tags.
+      </p>
+
+      <form onsubmit="handleSaveBranding(event)">
+        <div class="form-group">
+          <label>WhatsApp Order Number (10 digits) *</label>
+          <input type="tel" id="cfg-phone" class="form-control" placeholder="7501454081" required />
+          <small style="color:var(--text-muted); font-size:0.75rem;">Orders will be sent directly to this WhatsApp contact.</small>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Brand Name</label>
+            <input type="text" id="cfg-brand" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Subtitle / Location</label>
+            <input type="text" id="cfg-subtitle" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Logo Style</label>
+          <select id="cfg-logo-type" class="form-control" onchange="toggleLogoFields()">
+            <option value="monogram">Glowing Letter Monogram (e.g. 'P' or 'SD')</option>
+            <option value="image">Custom Uploaded Image Logo</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="logo-monogram-field">
+          <label>Monogram Character(s)</label>
+          <input type="text" id="cfg-logo-char" class="form-control" maxlength="3" />
+        </div>
+
+        <div class="form-group" id="logo-image-field" style="display:none;">
+          <label>Select Logo Photo from Device</label>
+          <input type="file" id="cfg-logo-file" class="form-control" accept="image/*" onchange="previewLogoFile(event)" />
+        </div>
+
+        <div class="form-group">
+          <label>Global Gallery Price Tag Visibility</label>
+          <select id="cfg-price-visibility" class="form-control">
+            <option value="true">Show Price Tags Everywhere</option>
+            <option value="false">Hide Prices (Show 'Price on Request')</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Fallback Text when prices are hidden</label>
+          <input type="text" id="cfg-price-fallback" class="form-control" placeholder="Price on Request" />
+        </div>
+
+        <button type="submit" class="btn btn-glow-cyan" style="width:100%; margin-top:10px;">
+          Save Studio Configuration
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. SLOT REPLACEMENT & UPLOAD MODAL -->
+  <div id="upload-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('upload-modal')">×</button>
+      <h3 id="upload-modal-title" style="font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px;" class="glow-pink-text">
+        Replace Slot Artwork
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
+        Upload real photographs from your phone or PC. Automatically optimized for instant loading.
+      </p>
+
+      <form onsubmit="handleSaveSlotArtwork(event)">
+        <input type="hidden" id="edit-slot-id" value="" />
+
+        <div class="form-group">
+          <label>Select Photo from Device *</label>
+          <input type="file" id="slot-file-input" class="form-control" accept="image/*" onchange="previewSelectedImage(event)" />
+        </div>
+
+        <div class="form-group">
+          <label>Or Image URL (Optional)</label>
+          <input type="url" id="slot-url-input" class="form-control" placeholder="https://..." oninput="previewUrlImage(this.value)" />
+        </div>
+
+        <!-- Image Preview Box -->
+        <div style="margin-bottom:16px; border-radius:8px; overflow:hidden; max-height:200px; display:none; border:1px solid var(--border-subtle);" id="preview-container">
+          <img id="slot-preview-img" src="" alt="Preview" style="width:100%; height:200px; object-fit:cover;" />
+        </div>
+
+        <div class="form-group">
+          <label>Artwork Title *</label>
+          <input type="text" id="slot-title-input" class="form-control" placeholder="e.g. Teachers' Day Keepsake with Silk Bow" required />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="slot-category-input" class="form-control" required>
+              <!-- Dynamic options -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ribbon Accent Tag</label>
+            <input type="text" id="slot-ribbon-input" class="form-control" placeholder="e.g. Pink Satin Bow" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Price Display on Card (e.g. ₹650 or leave blank to use Category base rate)</label>
+          <input type="text" id="slot-price-input" class="form-control" placeholder="₹650" />
+        </div>
+
+        <div class="form-group">
+          <label>Description / Story</label>
+          <textarea id="slot-desc-input" class="form-control" rows="2" placeholder="Customized for an anniversary..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-glow-pink" style="width:100%; margin-top:8px;">
+          Save & Publish Slot
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. CHANGE PASSWORD / OWNER CREDENTIALS MODAL -->
+  <div id="creds-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('creds-modal')">×</button>
+      <h3 style="font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px;" class="glow-gold-text">
+        Change Owner Credentials
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
+        Update your login username and passkey. Saved securely in your browser storage.
+      </p>
+
+      <form onsubmit="handleUpdateCredentials(event)">
+        <div class="form-group">
+          <label>Current Username</label>
+          <input type="text" id="current-user-input" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="current-pass-input" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="new-pass-input" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-glow-cyan" style="width:100%; margin-top:10px;">
+          Update & Save Credentials
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. SUBMIT REVIEW MODAL -->
+  <div id="review-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('review-modal')">×</button>
+      <h3 style="font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px;" class="glow-gold-text">
+        Leave a Review for Picify
+      </h3>
+      <form onsubmit="handleReviewSubmission(event)">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="rev-name" class="form-control" placeholder="e.g. Sreya Mukherjee" required />
+        </div>
+        <div class="form-group">
+          <label>Rating</label>
+          <select id="rev-stars" class="form-control">
+            <option value="5">⭐⭐⭐⭐⭐ (5/5 Outstanding Quality)</option>
+            <option value="4">⭐⭐⭐⭐ (4/5 Great Handiwork)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Your Feedback</label>
+          <textarea id="rev-text" class="form-control" rows="3" placeholder="How did you like the finish and ribbon detailing?" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-glow-cyan" style="width:100%; margin-top:10px;">
+          Submit Feedback
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. LIGHTBOX MODAL -->
+  <div id="lightbox-modal" class="modal-overlay" onclick="closeModal('lightbox-modal')">
+    <div class="modal-content" style="max-width:700px; padding:15px; background:#07090e; text-align:center;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal('lightbox-modal')">×</button>
+      <img id="lightbox-img" src="" alt="Enlarged Artwork" style="width:100%; max-height:75vh; object-fit:contain; border-radius:8px;" />
+      <h4 id="lightbox-title" style="margin-top:14px; font-family:var(--font-art); font-size:1.2rem; color:#fff;"></h4>
+      <p id="lightbox-caption" style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;"></p>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION POPUP -->
+  <div id="toast-notification">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">Notification Message</span>
+  </div>
+
+  <!-- ==========================================================================
+       8. JAVASCRIPT ENGINE & CMS CONTROLLER
+       ========================================================================== */
+  -->
+  <script>
+    /* ==========================================================================
+       A. DEFAULTS & PERSISTENCE
+       ========================================================================== */
+    // Default Owner Credentials
+    const DEFAULT_CONFIG = {
+      username: "s.o.u.m.i._04",
+      password: "Soumi_krantikari_pronam_neben"
+    };
+
+    // Default Studio Branding & WhatsApp Phone
+    const DEFAULT_SETTINGS = {
+      brandName: "PICIFY",
+      studioSubtitle: "Soumi Dutta Studio • Majdia",
+      phone: "7501454081",
+      showPricing: true,
+      pricingFallback: "Price on Request",
+      logoType: "monogram",
+      logoText: "P",
+      logoImg: "",
+      heroTitle: "Every Soul Deserves <br /><span class=\"glow-cyan-text\">An Everlasting Glow</span>",
+      heroDesc: "Specializing in Teachers' Day customized keepsakes, personalized 'Mrs. Boss Lady' watercolor portraits, ribbon boulevard vehicle memory boards, and tailored romantic frames."
+    };
+
+    // Default Dynamic Categories with Individual Base Prices
+    const DEFAULT_CATEGORIES = [
+      { id: "teachers_day", name: "Teachers' Day Special", basePrice: 599 },
+      { id: "watercolor", name: "Watercolor Portraits", basePrice: 1250 },
+      { id: "keepsake_board", name: "Keepsake & Car Boards", basePrice: 899 },
+      { id: "calligraphy", name: "Calligraphy Letters", basePrice: 450 }
+    ];
+
+    // Frame Dimension Add-on Surcharges
+    const SIZE_SURCHARGES = {
+      "A4 Mini Glass Frame (8 x 12 in)": 0,
+      "A3 Premium Keepsake Frame (12 x 18 in)": 300,
+      "Custom Cutout Board with Satin Ribbon": 200,
+      "Square Desk Standee (8 x 8 in)": 150
+    };
+
+    // Demo Artwork Slots matching Soumi's Facebook Creations
+    const DEFAULT_GALLERY = [
+      {
+        id: "slot-1",
+        title: "Teachers' Day Satin Ribbon Keepsake",
+        category: "teachers_day",
+        ribbon: "Hot Pink Ribbon Bow",
+        price: "₹650",
+        description: "Customized invitation board with hand-tied satin bow and floral watercolor backdrop made for Teachers' Day celebration.",
+        image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "slot-2",
+        title: "Mr. Romeo - Boulevard Car Memory Board",
+        category: "keepsake_board",
+        ribbon: "Baby Pink Satin Bow",
+        price: "₹899",
+        description: "Custom vehicle portrait featuring personalized license plate 'BR01JR2179' with urban boulevard artistic wash.",
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "slot-3",
+        title: "Mrs. Boss Lady - Watercolor Splash Portrait",
+        category: "watercolor",
+        ribbon: "Magenta Ribbon Bow",
+        price: "₹1,250",
+        description: "Intense multi-color chromatic splashes celebrating grace, confidence, and personality. Finished with custom title lettering.",
+        image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "slot-4",
+        title: "Vintage Ocean Poetry & Calligraphy Board",
+        category: "calligraphy",
+        ribbon: "Champagne Bow",
+        price: "₹550",
+        description: "Aesthetic aged parchment paper styling with handwritten tribute poem, seaside framing, and delicate calligraphy.",
+        image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80"
+      }
+    ];
+
+    // Customer Reviews
+    const DEFAULT_REVIEWS = [
+      {
+        name: "Rituparna Sen",
+        stars: 5,
+        text: "The Teachers' Day invitation frame was beyond beautiful! The satin ribbon and the print clarity made everyone in our school emotional.",
+        date: "Majdia, India"
+      },
+      {
+        name: "Debashis Banerjee",
+        stars: 5,
+        text: "Ordered the car keepsake board for my brother. The colors and typography are outstanding. Soumi is a true artist!",
+        date: "Ranaghat, India"
+      },
+      {
+        name: "Mousumi Paul",
+        stars: 5,
+        text: "100% recommended! Exactly as shown on her Facebook page. Beautiful packaging and arrived safely.",
+        date: "Krishnanagar, India"
+      }
+    ];
+
+    // Live GPS State
+    let capturedLocation = {
+      latitude: null,
+      longitude: null,
+      accuracy: null,
+      mapsUrl: null
+    };
+
+    /* ==========================================================================
+       B. STORAGE HELPERS
+       ========================================================================== */
+    function getStoredSettings() {
+      const s = localStorage.getItem('picify_settings');
+      return s ? JSON.parse(s) : DEFAULT_SETTINGS;
+    }
+
+    function saveStoredSettings(settings) {
+      localStorage.setItem('picify_settings', JSON.stringify(settings));
+    }
+
+    function getStoredCategories() {
+      const c = localStorage.getItem('picify_categories');
+      return c ? JSON.parse(c) : DEFAULT_CATEGORIES;
+    }
+
+    function saveStoredCategories(categories) {
+      localStorage.setItem('picify_categories', JSON.stringify(categories));
+    }
+
+    function getStoredGallery() {
+      const g = localStorage.getItem('picify_gallery');
+      return g ? JSON.parse(g) : DEFAULT_GALLERY;
+    }
+
+    function saveStoredGallery(gallery) {
+      localStorage.setItem('picify_gallery', JSON.stringify(gallery));
+    }
+
+    function getStoredReviews() {
+      const r = localStorage.getItem('picify_reviews');
+      return r ? JSON.parse(r) : DEFAULT_REVIEWS;
+    }
+
+    function saveStoredReviews(reviews) {
+      localStorage.setItem('picify_reviews', JSON.stringify(reviews));
+    }
+
+    function getStoredCreds() {
+      const c = localStorage.getItem('picify_creds');
+      return c ? JSON.parse(c) : DEFAULT_CONFIG;
+    }
+
+    function isOwnerLoggedIn() {
+      return sessionStorage.getItem('picify_owner_session') === 'true';
+    }
+
+    /* ==========================================================================
+       C. INITIALIZATION & UI SYNC
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initParticleCanvas();
+      applyBrandingSettings();
+      renderCategoryFilterTabs();
+      populateCategoryDropdowns();
+      renderGallery();
+      renderReviews();
+      checkOwnerStatus();
+      updateLiveOrderPrice();
+    });
+
+    function applyBrandingSettings() {
+      const s = getStoredSettings();
+      document.getElementById('nav-brand-title').textContent = s.brandName;
+      document.getElementById('nav-brand-subtitle').textContent = s.studioSubtitle;
+      document.getElementById('footer-brand-title').textContent = `${s.brandName} by Soumi Dutta`;
+      document.getElementById('hero-title-render').innerHTML = s.heroTitle;
+      document.getElementById('hero-desc-render').textContent = s.heroDesc;
+
+      const logoBox = document.getElementById('logo-render-box');
+      if (s.logoType === 'image' && s.logoImg) {
+        logoBox.innerHTML = `<img src="${s.logoImg}" class="logo-image-render" alt="Logo"/>`;
+      } else {
+        logoBox.innerHTML = `<span class="logo-monogram">${escapeHtml(s.logoText || 'P')}</span>`;
+      }
+    }
+
+    function checkOwnerStatus() {
+      const loggedIn = isOwnerLoggedIn();
+      const banner = document.getElementById('owner-banner');
+      const uploadTrigger = document.getElementById('owner-upload-trigger');
+      const keyBtn = document.getElementById('owner-key-btn');
+
+      if (loggedIn) {
+        document.body.classList.add('owner-logged-in');
+        banner.classList.add('active');
+        uploadTrigger.style.display = 'block';
+        keyBtn.textContent = '🔓 Logged in';
+        keyBtn.classList.remove('btn-dark');
+        keyBtn.classList.add('btn-glow-cyan');
+      } else {
+        document.body.classList.remove('owner-logged-in');
+        banner.classList.remove('active');
+        uploadTrigger.style.display = 'none';
+        keyBtn.textContent = '🔒 Owner';
+        keyBtn.classList.remove('btn-glow-cyan');
+        keyBtn.classList.add('btn-dark');
+      }
+    }
+
+    /* ==========================================================================
+       D. DYNAMIC CATEGORY & PRICING LOGIC
+       ========================================================================== */
+    let currentFilter = 'all';
+
+    function renderCategoryFilterTabs() {
+      const bar = document.getElementById('gallery-filter-tabs');
+      const categories = getStoredCategories();
+
+      let html = `<button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="filterGallery('all', this)">All Creations</button>`;
+      categories.forEach(cat => {
+        html += `<button class="filter-btn ${currentFilter === cat.id ? 'active' : ''}" onclick="filterGallery('${cat.id}', this)">${escapeHtml(cat.name)}</button>`;
+      });
+      bar.innerHTML = html;
+    }
+
+    function populateCategoryDropdowns() {
+      const categories = getStoredCategories();
+      const orderSelect = document.getElementById('cust-category');
+      const slotSelect = document.getElementById('slot-category-input');
+
+      let orderHtml = '';
+      let slotHtml = '';
+
+      categories.forEach(cat => {
+        orderHtml += `<option value="${cat.id}">${escapeHtml(cat.name)} (Base ₹${cat.basePrice})</option>`;
+        slotHtml += `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`;
+      });
+
+      orderSelect.innerHTML = orderHtml;
+      slotSelect.innerHTML = slotHtml;
+    }
+
+    function filterGallery(category, btnElement) {
+      currentFilter = category;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      renderGallery();
+    }
+
+    function updateLiveOrderPrice() {
+      const catSelect = document.getElementById('cust-category');
+      const sizeSelect = document.getElementById('cust-size');
+      const priceVal = document.getElementById('live-calculated-price');
+      const breakdown = document.getElementById('price-box-breakdown');
+      const settings = getStoredSettings();
+
+      if (!settings.showPricing) {
+        priceVal.textContent = settings.pricingFallback || "Quote on Request";
+        breakdown.textContent = "Pricing is shared individually on WhatsApp.";
+        return;
+      }
+
+      const categories = getStoredCategories();
+      const selectedCat = categories.find(c => c.id === catSelect.value);
+      const base = selectedCat ? (Number(selectedCat.basePrice) || 0) : 0;
+      const surcharge = SIZE_SURCHARGES[sizeSelect.value] || 0;
+      const total = base + surcharge;
+
+      priceVal.textContent = total > 0 ? `₹${total}` : "Quote on Request";
+      breakdown.textContent = `Base ₹${base} + Frame Modifier ₹${surcharge}`;
+    }
+
+    /* Category CMS Modal */
+    function openCategoriesModal() {
+      if (!isOwnerLoggedIn()) return;
+      renderCategoryManagerTable();
+      openModal('category-modal');
+    }
+
+    function renderCategoryManagerTable() {
+      const tbody = document.getElementById('category-table-body');
+      const categories = getStoredCategories();
+
+      tbody.innerHTML = categories.map((cat, idx) => `
+        <tr>
+          <td>
+            <input type="text" class="form-control" style="padding:6px 10px; font-size:0.85rem;" value="${escapeHtml(cat.name)}" onchange="updateCategoryName(${idx}, this.value)"/>
+          </td>
+          <td style="width:130px;">
+            <input type="number" class="form-control" style="padding:6px 10px; font-size:0.85rem;" value="${cat.basePrice}" onchange="updateCategoryPrice(${idx}, this.value)"/>
+          </td>
+          <td style="text-align:right;">
+            <button class="btn btn-dark btn-sm" style="color:#ef4444; padding:4px 8px;" onclick="deleteCategory(${idx})">🗑️ Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addNewCategory() {
+      const nameInput = document.getElementById('new-cat-name');
+      const priceInput = document.getElementById('new-cat-price');
+      const name = nameInput.value.trim();
+      const price = parseInt(priceInput.value, 10) || 0;
+
+      if (!name) {
+        showToast("Please enter a category name.", "⚠️");
+        return;
+      }
+
+      const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+      let categories = getStoredCategories();
+      categories.push({ id, name, basePrice: price });
+      saveStoredCategories(categories);
+
+      nameInput.value = "";
+      priceInput.value = "";
+
+      renderCategoryManagerTable();
+      renderCategoryFilterTabs();
+      populateCategoryDropdowns();
+      renderGallery();
+      updateLiveOrderPrice();
+      showToast(`Category "${name}" added!`, "🏷️");
+    }
+
+    function updateCategoryName(index, newName) {
+      let categories = getStoredCategories();
+      if (!newName.trim()) return;
+      categories[index].name = newName.trim();
+      saveStoredCategories(categories);
+      renderCategoryFilterTabs();
+      populateCategoryDropdowns();
+      renderGallery();
+      showToast("Category name updated.", "✓");
+    }
+
+    function updateCategoryPrice(index, newPrice) {
+      let categories = getStoredCategories();
+      categories[index].basePrice = parseInt(newPrice, 10) || 0;
+      saveStoredCategories(categories);
+      populateCategoryDropdowns();
+      updateLiveOrderPrice();
+      renderGallery();
+      showToast("Base price updated.", "✓");
+    }
+
+    function deleteCategory(index) {
+      let categories = getStoredCategories();
+      if (categories.length <= 1) {
+        showToast("You must keep at least one category.", "⚠️");
+        return;
+      }
+      const removed = categories.splice(index, 1);
+      saveStoredCategories(categories);
+      renderCategoryManagerTable();
+      renderCategoryFilterTabs();
+      populateCategoryDropdowns();
+      renderGallery();
+      updateLiveOrderPrice();
+      showToast(`Category removed.`, "🗑️");
+    }
+
+    /* ==========================================================================
+       E. GALLERY RENDERING & SLOT CARDS
+       ========================================================================== */
+    function renderGallery() {
+      const container = document.getElementById('gallery-grid');
+      const items = getStoredGallery();
+      const settings = getStoredSettings();
+      const categories = getStoredCategories();
+
+      const filtered = currentFilter === 'all' 
+        ? items 
+        : items.filter(item => item.category === currentFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">
+            No creations found in this category yet.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const catObj = categories.find(c => c.id === item.category);
+        const catName = catObj ? catObj.name : "Custom Art";
+        
+        let displayPrice = "";
+        if (settings.showPricing) {
+          displayPrice = item.price ? item.price : (catObj ? `Starts ₹${catObj.basePrice}` : "Quote on Request");
+        } else {
+          displayPrice = settings.pricingFallback || "Quote on Request";
+        }
+
+        return `
+          <div class="art-card" id="card-${item.id}">
+            <div class="art-media-wrap" onclick="openLightbox('${item.image}', '${escapeHtml(item.title)}', '${escapeHtml(item.description)}')">
+              ${item.ribbon ? `<div class="ribbon-tag">🎀 ${escapeHtml(item.ribbon)}</div>` : ''}
+              <div class="category-badge">${escapeHtml(catName)}</div>
+              <img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80'"/>
+            </div>
+            <div class="art-body">
+              <h3 class="art-title">${escapeHtml(item.title)}</h3>
+              <p class="art-description">${escapeHtml(item.description)}</p>
+              <div class="art-footer">
+                <span class="art-price">${escapeHtml(displayPrice)}</span>
+                <button class="btn btn-dark btn-sm" onclick="selectCardForOrder('${escapeHtml(item.title)}', '${item.category}')">
+                  Order Similar
+                </button>
+              </div>
+
+              <!-- Owner Action Bar (Hidden for guests) -->
+              <div class="admin-card-bar">
+                <button class="btn btn-glow-pink btn-sm" style="flex:1;" onclick="openEditSlotModal('${item.id}')">
+                  ✏️ Replace Photo / Edit
+                </button>
+                <button class="btn btn-dark btn-sm" style="color:#ef4444;" onclick="deleteGalleryItem('${item.id}')">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ==========================================================================
+       F. OWNER AUTHENTICATION & CREDENTIALS
+       ========================================================================== */
+    function handleOwnerLogin(e) {
+      e.preventDefault();
+      const enteredUser = document.getElementById('owner-user-input').value.trim();
+      const enteredPass = document.getElementById('owner-pass-input').value.trim();
+      const currentCreds = getStoredCreds();
+
+      if (enteredUser === currentCreds.username && enteredPass === currentCreds.password) {
+        sessionStorage.setItem('picify_owner_session', 'true');
+        closeModal('login-modal');
+        checkOwnerStatus();
+        renderGallery();
+        renderReviews();
+        showToast("Welcome Soumi! Studio Manager Active.", "✨");
+        document.getElementById('owner-pass-input').value = "";
+      } else {
+        showToast("Incorrect Username or Password. Try again.", "⚠️");
+      }
+    }
+
+    function logoutOwner() {
+      sessionStorage.removeItem('picify_owner_session');
+      checkOwnerStatus();
+      renderGallery();
+      renderReviews();
+      showToast("Logged out of Owner Studio.", "🔒");
+    }
+
+    function handleUpdateCredentials(e) {
+      e.preventDefault();
+      if (!isOwnerLoggedIn()) return;
+
+      const user = document.getElementById('current-user-input').value.trim();
+      const pass = document.getElementById('current-pass-input').value.trim();
+      const newPass = document.getElementById('new-pass-input').value.trim();
+      const currentCreds = getStoredCreds();
+
+      if (user !== currentCreds.username || pass !== currentCreds.password) {
+        showToast("Current username or password incorrect.", "⚠️");
+        return;
+      }
+
+      if (newPass.length < 6) {
+        showToast("New password must be at least 6 characters.", "⚠️");
+        return;
+      }
+
+      localStorage.setItem('picify_creds', JSON.stringify({ username: user, password: newPass }));
+      closeModal('creds-modal');
+      showToast("Credentials updated successfully!", "🔑");
+    }
+
+    /* ==========================================================================
+       G. STUDIO BRANDING, PHONE & LOGO CMS
+       ========================================================================== */
+    let tempUploadedLogoBase64 = null;
+
+    function openBrandingModal() {
+      if (!isOwnerLoggedIn()) return;
+      const s = getStoredSettings();
+      document.getElementById('cfg-phone').value = s.phone;
+      document.getElementById('cfg-brand').value = s.brandName;
+      document.getElementById('cfg-subtitle').value = s.studioSubtitle;
+      document.getElementById('cfg-logo-type').value = s.logoType;
+      document.getElementById('cfg-logo-char').value = s.logoText;
+      document.getElementById('cfg-price-visibility').value = s.showPricing.toString();
+      document.getElementById('cfg-price-fallback').value = s.pricingFallback;
+      toggleLogoFields();
+      openModal('branding-modal');
+    }
+
+    function toggleLogoFields() {
+      const type = document.getElementById('cfg-logo-type').value;
+      document.getElementById('logo-monogram-field').style.display = type === 'monogram' ? 'block' : 'none';
+      document.getElementById('logo-image-field').style.display = type === 'image' ? 'block' : 'none';
+    }
+
+    function previewLogoFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        tempUploadedLogoBase64 = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleSaveBranding(e) {
+      e.preventDefault();
+      if (!isOwnerLoggedIn()) return;
+
+      let s = getStoredSettings();
+      const cleanPhone = document.getElementById('cfg-phone').value.replace(/[^0-9]/g, '');
+      if (cleanPhone.length < 10) {
+        showToast("Please enter a valid 10-digit mobile number.", "⚠️");
+        return;
+      }
+
+      s.phone = cleanPhone;
+      s.brandName = document.getElementById('cfg-brand').value.trim();
+      s.studioSubtitle = document.getElementById('cfg-subtitle').value.trim();
+      s.logoType = document.getElementById('cfg-logo-type').value;
+      s.logoText = document.getElementById('cfg-logo-char').value.trim() || 'P';
+      if (tempUploadedLogoBase64) {
+        s.logoImg = tempUploadedLogoBase64;
+      }
+      s.showPricing = document.getElementById('cfg-price-visibility').value === 'true';
+      s.pricingFallback = document.getElementById('cfg-price-fallback').value.trim() || "Price on Request";
+
+      saveStoredSettings(s);
+      applyBrandingSettings();
+      renderGallery();
+      updateLiveOrderPrice();
+      closeModal('branding-modal');
+      showToast("Studio branding & phone updated!", "🎨");
+    }
+
+    /* ==========================================================================
+       H. SLOT REPLACEMENT & PHOTO UPLOADS
+       ========================================================================== */
+    let currentUploadBase64 = null;
+
+    function openNewUploadModal() {
+      if (!isOwnerLoggedIn()) return;
+      document.getElementById('upload-modal-title').textContent = "Upload New Artwork to Gallery";
+      document.getElementById('edit-slot-id').value = "";
+      document.getElementById('slot-title-input').value = "";
+      document.getElementById('slot-ribbon-input').value = "";
+      document.getElementById('slot-price-input').value = "";
+      document.getElementById('slot-desc-input').value = "";
+      document.getElementById('slot-url-input').value = "";
+      document.getElementById('slot-file-input').value = "";
+      document.getElementById('preview-container').style.display = 'none';
+      currentUploadBase64 = null;
+      openModal('upload-modal');
+    }
+
+    function openEditSlotModal(slotId) {
+      if (!isOwnerLoggedIn()) return;
+      const gallery = getStoredGallery();
+      const item = gallery.find(i => i.id === slotId);
+      if (!item) return;
+
+      document.getElementById('upload-modal-title').textContent = "Replace Photo & Details for this Slot";
+      document.getElementById('edit-slot-id').value = item.id;
+      document.getElementById('slot-title-input').value = item.title;
+      document.getElementById('slot-category-input').value = item.category;
+      document.getElementById('slot-ribbon-input').value = item.ribbon || "";
+      document.getElementById('slot-price-input').value = item.price || "";
+      document.getElementById('slot-desc-input').value = item.description || "";
+      document.getElementById('slot-url-input').value = item.image.startsWith('data:') ? '' : item.image;
+      document.getElementById('slot-file-input').value = "";
+      
+      document.getElementById('slot-preview-img').src = item.image;
+      document.getElementById('preview-container').style.display = 'block';
+      currentUploadBase64 = item.image;
+
+      openModal('upload-modal');
+    }
+
+    // Auto compress client photos to keep localStorage clean
+    function previewSelectedImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 1000;
+
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          currentUploadBase64 = canvas.toDataURL('image/jpeg', 0.85);
+          document.getElementById('slot-preview-img').src = currentUploadBase64;
+          document.getElementById('preview-container').style.display = 'block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function previewUrlImage(url) {
+      if (url && url.startsWith('http')) {
+        currentUploadBase64 = url;
+        document.getElementById('slot-preview-img').src = url;
+        document.getElementById('preview-container').style.display = 'block';
+      }
+    }
+
+    function handleSaveSlotArtwork(e) {
+      e.preventDefault();
+      if (!isOwnerLoggedIn()) return;
+
+      const slotId = document.getElementById('edit-slot-id').value;
+      const title = document.getElementById('slot-title-input').value.trim();
+      const category = document.getElementById('slot-category-input').value;
+      const ribbon = document.getElementById('slot-ribbon-input').value.trim();
+      const price = document.getElementById('slot-price-input').value.trim();
+      const desc = document.getElementById('slot-desc-input').value.trim();
+      const urlInput = document.getElementById('slot-url-input').value.trim();
+
+      const finalImage = currentUploadBase64 || urlInput || "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80";
+
+      let gallery = getStoredGallery();
+
+      if (slotId) {
+        const index = gallery.findIndex(item => item.id === slotId);
+        if (index !== -1) {
+          gallery[index] = {
+            ...gallery[index],
+            title,
+            category,
+            ribbon,
+            price,
+            description: desc,
+            image: finalImage
+          };
+        }
+        showToast("Slot artwork replaced!", "🎨");
+      } else {
+        const newItem = {
+          id: 'slot-' + Date.now(),
+          title,
+          category,
+          ribbon,
+          price,
+          description: desc,
+          image: finalImage
+        };
+        gallery.unshift(newItem);
+        showToast("New artwork added!", "✨");
+      }
+
+      saveStoredGallery(gallery);
+      renderGallery();
+      closeModal('upload-modal');
+    }
+
+    function deleteGalleryItem(id) {
+      if (!isOwnerLoggedIn()) return;
+      if (!confirm("Are you sure you want to delete this piece?")) return;
+
+      let gallery = getStoredGallery();
+      gallery = gallery.filter(item => item.id !== id);
+      saveStoredGallery(gallery);
+      renderGallery();
+      showToast("Artwork removed.", "🗑️");
+    }
+
+    /* ==========================================================================
+       I. SATELLITE GPS LOCATION PINPOINT
+       ========================================================================== */
+    function captureLiveLocation() {
+      const indicator = document.getElementById('gps-indicator');
+      const display = document.getElementById('gps-coords-display');
+      const btn = document.getElementById('gps-trigger-btn');
+
+      if (!("geolocation" in navigator)) {
+        showToast("Geolocation is not supported by your browser.", "⚠️");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "📡 Connecting to Satellites...";
+      indicator.textContent = "🔄 Locating Coordinates...";
+      indicator.className = "gps-badge";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          const accuracy = Math.round(position.coords.accuracy);
+
+          capturedLocation = {
+            latitude: lat,
+            longitude: lng,
+            accuracy: accuracy,
+            mapsUrl: `https://maps.google.com/?q=${lat},${lng}`
+          };
+
+          indicator.textContent = `✓ GPS Locked (±${accuracy}m)`;
+          indicator.className = "gps-badge active";
+
+          display.style.display = 'block';
+          display.innerHTML = `
+            <strong>Coordinates:</strong> ${lat}, ${lng} <br/>
+            <strong>Accuracy:</strong> Within ${accuracy} meters <br/>
+            <a href="${capturedLocation.mapsUrl}" target="_blank" style="color:var(--neon-cyan); text-decoration:underline;">
+              🗺️ Test View My Pin on Google Maps
+            </a>
+          `;
+
+          btn.disabled = false;
+          btn.textContent = "✓ Location Locked (Tap to Refresh)";
+          showToast("GPS Pinpoint attached!", "📍");
+        },
+        (error) => {
+          btn.disabled = false;
+          btn.textContent = "📡 Retry Detecting GPS";
+          indicator.textContent = "⚠️ Location Access Denied";
+          indicator.className = "gps-badge";
+
+          let message = "Could not access location. Please type your address manually.";
+          if (error.code === error.PERMISSION_DENIED) {
+            message = "Location permission denied. Please allow location access in your browser.";
+          }
+          showToast(message, "⚠️");
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    /* ==========================================================================
+       J. ORDER SUBMISSION VIA WHATSAPP (WITH PHONE LOGIC)
+       ========================================================================== */
+    function selectCardForOrder(artworkTitle, catId) {
+      document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+      if (catId) {
+        document.getElementById('cust-category').value = catId;
+        updateLiveOrderPrice();
+      }
+      document.getElementById('cust-message').value = `Interested in custom artwork inspired by "${artworkTitle}".`;
+      showToast(`Selected "${artworkTitle}" in order form!`, "🎁");
+    }
+
+    function handleOrderSubmission(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const catSelect = document.getElementById('cust-category');
+      const size = document.getElementById('cust-size').value;
+      const message = document.getElementById('cust-message').value.trim();
+      const address = document.getElementById('cust-address').value.trim();
+      const calculatedPrice = document.getElementById('live-calculated-price').textContent;
+
+      const categories = getStoredCategories();
+      const selectedCat = categories.find(c => c.id === catSelect.value);
+      const categoryName = selectedCat ? selectedCat.name : catSelect.value;
+
+      const settings = getStoredSettings();
+      const rawPhone = settings.phone || "7501454081";
+      // Ensure Indian country code 91 is prepended
+      const cleanDigits = rawPhone.replace(/[^0-9]/g, '');
+      const targetPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
+
+      // WhatsApp Message Formatting
+      let text = `🎨 *NEW PICIFY CUSTOM ART COMMISSION* 🎨\n\n`;
+      text += `👤 *Customer Name:* ${name}\n`;
+      text += `📞 *Customer Phone:* ${phone}\n`;
+      text += `🖼️ *Artwork Category:* ${categoryName}\n`;
+      text += `📐 *Frame Dimension:* ${size}\n`;
+      text += `💰 *Calculated Price Quote:* ${calculatedPrice}\n`;
+      if (message) {
+        text += `✍️ *Custom Inscription/Poem:* "${message}"\n`;
+      }
+      text += `🏡 *Delivery Address:* ${address}\n\n`;
+
+      if (capturedLocation.mapsUrl) {
+        text += `📍 *Exact GPS Location Pin:* \n${capturedLocation.mapsUrl}\n`;
+        text += `🎯 *GPS Accuracy:* ±${capturedLocation.accuracy} meters\n`;
+      } else {
+        text += `📍 *GPS Location:* (Not attached - refer to address above)\n`;
+      }
+
+      text += `\n_Sent directly from ${settings.brandName} Official Website_`;
+
+      const encodedUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`;
+      window.open(encodedUrl, '_blank');
+      showToast("Redirecting to WhatsApp with your order & GPS coordinates...", "💬");
+    }
+
+    /* ==========================================================================
+       K. REVIEWS & FEEDBACK
+       ========================================================================== */
+    function renderReviews() {
+      const container = document.getElementById('feedback-grid');
+      const reviews = getStoredReviews();
+
+      container.innerHTML = reviews.map((rev, index) => `
+        <div class="feedback-card">
+          <div class="rating-stars">${'⭐'.repeat(rev.stars || 5)}</div>
+          <p class="feedback-text">"${escapeHtml(rev.text)}"</p>
+          <div class="feedback-author">
+            <strong style="color:#fff;">${escapeHtml(rev.name)}</strong>
+            <span>${escapeHtml(rev.date || 'Verified Buyer')}</span>
+          </div>
+          ${isOwnerLoggedIn() ? `
+            <div style="margin-top:10px; text-align:right;">
+              <button class="btn btn-dark btn-sm" style="color:#ef4444; font-size:0.7rem; padding:2px 8px;" onclick="deleteReview(${index})">
+                Remove Review
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function handleReviewSubmission(e) {
+      e.preventDefault();
+      const name = document.getElementById('rev-name').value.trim();
+      const stars = parseInt(document.getElementById('rev-stars').value, 10);
+      const text = document.getElementById('rev-text').value.trim();
+
+      const newReview = {
+        name,
+        stars,
+        text,
+        date: "Verified Customer"
+      };
+
+      let reviews = getStoredReviews();
+      reviews.unshift(newReview);
+      saveStoredReviews(reviews);
+      renderReviews();
+      closeModal('review-modal');
+      showToast("Thank you for your review!", "⭐");
+
+      document.getElementById('rev-name').value = "";
+      document.getElementById('rev-text').value = "";
+    }
+
+    function deleteReview(index) {
+      if (!isOwnerLoggedIn()) return;
+      let reviews = getStoredReviews();
+      reviews.splice(index, 1);
+      saveStoredReviews(reviews);
+      renderReviews();
+      showToast("Review deleted.", "🗑️");
+    }
+
+    /* ==========================================================================
+       L. MODAL HELPERS & LIGHTBOX
+       ========================================================================== */
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function openLoginModal() {
+      if (isOwnerLoggedIn()) {
+        showToast("You are already logged in as Soumi Dutta.", "✨");
+        return;
+      }
+      openModal('login-modal');
+    }
+
+    function openCredsModal() {
+      const currentCreds = getStoredCreds();
+      document.getElementById('current-user-input').value = currentCreds.username;
+      document.getElementById('current-pass-input').value = "";
+      document.getElementById('new-pass-input').value = "";
+      openModal('creds-modal');
+    }
+
+    function openReviewModal() {
+      openModal('review-modal');
+    }
+
+    function openLightbox(src, title, caption) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox-title').textContent = title;
+      document.getElementById('lightbox-caption').textContent = caption;
+      openModal('lightbox-modal');
+    }
+
+    function showToast(msg, icon = "✨") {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-msg').textContent = msg;
+      document.getElementById('toast-icon').textContent = icon;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* ==========================================================================
+       M. AMBIENT PARTICLE BACKGROUND CANVAS
+       ========================================================================== */
+    function initParticleCanvas() {
+      const canvas = document.getElementById('ambient-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+
+      class Particle {
+        constructor() {
+          this.reset();
+        }
+
+        reset() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.size = Math.random() * 2 + 0.5;
+          this.speedX = (Math.random() - 0.5) * 0.4;
+          this.speedY = (Math.random() - 0.5) * 0.4;
+          this.alpha = Math.random() * 0.6 + 0.2;
+          this.color = Math.random() > 0.5 ? '0, 240, 255' : '255, 42, 133';
+        }
+
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+
+          if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+            this.reset();
+          }
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = `rgba(${this.color}, 0.8)`;
+          ctx.fill();
+        }
+      }
+
+      for (let i = 0; i < 50; i++) {
+        particles.push(new Particle());
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+  </script>
+</body>
+</html>
