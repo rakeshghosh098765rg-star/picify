@@ -11,6 +11,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDK (v10 Compat for browser cloud sync) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <style>
     /* ==========================================================================
        1. CSS VARIABLES & CYBER-LUXE DARK THEME
@@ -1028,7 +1032,7 @@
     <div class="wrapper owner-banner-content">
       <div style="display:flex; align-items:center; gap:10px;">
         <span class="owner-badge">● OWNER ACTIVE: Soumi Dutta</span>
-        <span style="color:var(--text-muted); font-size:0.8rem;">Studio Manager Unlocked</span>
+        <span style="color:var(--text-muted); font-size:0.8rem;">Cloud Studio Synced</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn btn-glow-cyan btn-sm" onclick="openNewUploadModal()">+ Upload Work</button>
@@ -1480,7 +1484,7 @@
         Change Owner Credentials
       </h3>
       <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
-        Update your login username and passkey. Saved securely in your browser storage.
+        Update your login username and passkey. Saved securely in Google Cloud Firestore.
       </p>
 
       <form onsubmit="handleUpdateCredentials(event)">
@@ -1577,12 +1581,25 @@
   </div>
 
   <!-- ==========================================================================
-       8. JAVASCRIPT ENGINE & CMS CONTROLLER
+       8. JAVASCRIPT ENGINE & FIREBASE FIRESTORE SYNC
        ========================================================================== -->
   <script>
     /* ==========================================================================
-       A. DEFAULTS & PERSISTENCE
+       A. FIREBASE CONFIGURATION & INITIALIZATION
        ========================================================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8rFIWaFLW2xwJHFqnPy8XFI96tbDUk_Y",
+      authDomain: "picify-17ef7.firebaseapp.com",
+      projectId: "picify-17ef7",
+      storageBucket: "picify-17ef7.firebasestorage.app",
+      messagingSenderId: "717199685443",
+      appId: "1:717199685443:web:18a98abeeb282493f161f6",
+      measurementId: "G-WE6XSZQMSN"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     // Default Owner Credentials
     const DEFAULT_CONFIG = {
       username: "s.o.u.m.i._04",
@@ -1619,7 +1636,7 @@
       "Square Desk Standee (8 x 8 in)": 150
     };
 
-    // Demo Artwork Slots matching Soumi's Facebook Creations
+    // Initial Demo Artwork Slots matching Soumi's Facebook Creations
     const DEFAULT_GALLERY = [
       {
         id: "slot-1",
@@ -1628,7 +1645,8 @@
         ribbon: "Hot Pink Ribbon Bow",
         price: "₹650",
         description: "Customized invitation board with hand-tied satin bow and floral watercolor backdrop made for Teachers' Day celebration.",
-        image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80"
+        image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
+        createdAt: 4000
       },
       {
         id: "slot-2",
@@ -1637,7 +1655,8 @@
         ribbon: "Baby Pink Satin Bow",
         price: "₹899",
         description: "Custom vehicle portrait featuring personalized license plate BR01JR2179 with urban boulevard artistic wash.",
-        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80"
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+        createdAt: 3000
       },
       {
         id: "slot-3",
@@ -1646,7 +1665,8 @@
         ribbon: "Magenta Ribbon Bow",
         price: "₹1,250",
         description: "Intense multi-color chromatic splashes celebrating grace, confidence, and personality. Finished with custom title lettering.",
-        image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80"
+        image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+        createdAt: 2000
       },
       {
         id: "slot-4",
@@ -1655,31 +1675,45 @@
         ribbon: "Champagne Bow",
         price: "₹550",
         description: "Aesthetic aged parchment paper styling with handwritten tribute poem, seaside framing, and delicate calligraphy.",
-        image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80"
+        image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80",
+        createdAt: 1000
       }
     ];
 
     // Customer Reviews
     const DEFAULT_REVIEWS = [
       {
+        id: "rev-1",
         name: "Rituparna Sen",
         stars: 5,
         text: "The Teachers' Day invitation frame was beyond beautiful! The satin ribbon and the print clarity made everyone in our school emotional.",
-        date: "Majdia, India"
+        date: "Majdia, India",
+        createdAt: 3000
       },
       {
+        id: "rev-2",
         name: "Debashis Banerjee",
         stars: 5,
         text: "Ordered the car keepsake board for my brother. The colors and typography are outstanding. Soumi is a true artist!",
-        date: "Ranaghat, India"
+        date: "Ranaghat, India",
+        createdAt: 2000
       },
       {
+        id: "rev-3",
         name: "Mousumi Paul",
         stars: 5,
         text: "100% recommended! Exactly as shown on her Facebook page. Beautiful packaging and arrived safely.",
-        date: "Krishnanagar, India"
+        date: "Krishnanagar, India",
+        createdAt: 1000
       }
     ];
+
+    // Runtime state synced with Firestore
+    let currentGallery = [...DEFAULT_GALLERY];
+    let currentCategories = [...DEFAULT_CATEGORIES];
+    let currentSettings = { ...DEFAULT_SETTINGS };
+    let currentReviews = [...DEFAULT_REVIEWS];
+    let currentCreds = { ...DEFAULT_CONFIG };
 
     // Live GPS State
     let capturedLocation = {
@@ -1689,95 +1723,129 @@
       mapsUrl: null
     };
 
-    /* ==========================================================================
-       B. STORAGE HELPERS
-       ========================================================================== */
-    function getStoredSettings() {
-      const s = localStorage.getItem('picify_settings');
-      let parsed = s ? JSON.parse(s) : DEFAULT_SETTINGS;
-      if (parsed.heroDesc && parsed.heroDesc.includes("Specializing in Teachers' Day customized keepsakes")) {
-        parsed.heroDesc = "";
-        localStorage.setItem('picify_settings', JSON.stringify(parsed));
-      }
-      return parsed;
-    }
-
-    function saveStoredSettings(settings) {
-      localStorage.setItem('picify_settings', JSON.stringify(settings));
-    }
-
-    function getStoredCategories() {
-      const c = localStorage.getItem('picify_categories');
-      return c ? JSON.parse(c) : DEFAULT_CATEGORIES;
-    }
-
-    function saveStoredCategories(categories) {
-      localStorage.setItem('picify_categories', JSON.stringify(categories));
-    }
-
-    function getStoredGallery() {
-      const g = localStorage.getItem('picify_gallery');
-      return g ? JSON.parse(g) : DEFAULT_GALLERY;
-    }
-
-    function saveStoredGallery(gallery) {
-      localStorage.setItem('picify_gallery', JSON.stringify(gallery));
-    }
-
-    function getStoredReviews() {
-      const r = localStorage.getItem('picify_reviews');
-      return r ? JSON.parse(r) : DEFAULT_REVIEWS;
-    }
-
-    function saveStoredReviews(reviews) {
-      localStorage.setItem('picify_reviews', JSON.stringify(reviews));
-    }
-
-    function getStoredCreds() {
-      const c = localStorage.getItem('picify_creds');
-      return c ? JSON.parse(c) : DEFAULT_CONFIG;
-    }
-
     function isOwnerLoggedIn() {
       return sessionStorage.getItem('picify_owner_session') === 'true';
     }
 
     /* ==========================================================================
-       C. INITIALIZATION & UI SYNC
-       ========================================================================== */
+       B. FIRESTORE REAL-TIME LISTENERS & CLOUD SYNC
+       ========================================================================= */
     window.addEventListener('DOMContentLoaded', () => {
       initParticleCanvas();
-      applyBrandingSettings();
-      renderCategoryFilterTabs();
-      populateCategoryDropdowns();
-      renderGallery();
-      renderReviews();
       checkOwnerStatus();
-      updateLiveOrderPrice();
+      initFirestoreListeners();
     });
 
+    function initFirestoreListeners() {
+      // 1. Settings & Branding Cloud Listener
+      db.collection('settings').doc('branding').onSnapshot(doc => {
+        if (doc.exists) {
+          currentSettings = { ...DEFAULT_SETTINGS, ...doc.data() };
+        } else {
+          db.collection('settings').doc('branding').set(DEFAULT_SETTINGS);
+          currentSettings = { ...DEFAULT_SETTINGS };
+        }
+        applyBrandingSettings();
+        renderGallery();
+        updateLiveOrderPrice();
+      });
+
+      // 2. Owner Credentials Cloud Listener
+      db.collection('settings').doc('creds').onSnapshot(doc => {
+        if (doc.exists) {
+          currentCreds = { ...DEFAULT_CONFIG, ...doc.data() };
+        } else {
+          db.collection('settings').doc('creds').set(DEFAULT_CONFIG);
+          currentCreds = { ...DEFAULT_CONFIG };
+        }
+      });
+
+      // 3. Categories Cloud Listener
+      db.collection('categories').onSnapshot(snapshot => {
+        if (!snapshot.empty) {
+          currentCategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } else {
+          seedCategories();
+        }
+        renderCategoryFilterTabs();
+        populateCategoryDropdowns();
+        renderGallery();
+        updateLiveOrderPrice();
+      });
+
+      // 4. Gallery Artwork Cloud Listener (Syncs all devices)
+      db.collection('gallery').onSnapshot(snapshot => {
+        if (!snapshot.empty) {
+          const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          currentGallery = items;
+        } else {
+          seedGallery();
+        }
+        renderGallery();
+      });
+
+      // 5. Reviews Cloud Listener
+      db.collection('reviews').onSnapshot(snapshot => {
+        if (!snapshot.empty) {
+          const revs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          revs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          currentReviews = revs;
+        } else {
+          seedReviews();
+        }
+        renderReviews();
+      });
+    }
+
+    // Auto-seed initial demo items if Firestore collection is fresh
+    async function seedGallery() {
+      const batch = db.batch();
+      DEFAULT_GALLERY.forEach(item => {
+        const docRef = db.collection('gallery').doc(item.id);
+        batch.set(docRef, item);
+      });
+      await batch.commit();
+    }
+
+    async function seedCategories() {
+      const batch = db.batch();
+      DEFAULT_CATEGORIES.forEach(cat => {
+        const docRef = db.collection('categories').doc(cat.id);
+        batch.set(docRef, cat);
+      });
+      await batch.commit();
+    }
+
+    async function seedReviews() {
+      const batch = db.batch();
+      DEFAULT_REVIEWS.forEach(rev => {
+        const docRef = db.collection('reviews').doc(rev.id);
+        batch.set(docRef, rev);
+      });
+      await batch.commit();
+    }
+
+    /* ==========================================================================
+       C. UI RENDERING & DYNAMIC BINDINGS
+       ========================================================================== */
     function applyBrandingSettings() {
-      const s = getStoredSettings();
-      document.getElementById('nav-brand-title').textContent = s.brandName;
-      document.getElementById('nav-brand-subtitle').textContent = s.studioSubtitle;
-      document.getElementById('footer-brand-title').textContent = `${s.brandName} by Soumi Dutta`;
-      document.getElementById('hero-title-render').innerHTML = s.heroTitle;
+      document.getElementById('nav-brand-title').textContent = currentSettings.brandName;
+      document.getElementById('nav-brand-subtitle').textContent = currentSettings.studioSubtitle;
+      document.getElementById('footer-brand-title').textContent = `${currentSettings.brandName} by Soumi Dutta`;
+      document.getElementById('hero-title-render').innerHTML = currentSettings.heroTitle;
       
       const heroDescEl = document.getElementById('hero-desc-render');
       if (heroDescEl) {
-        heroDescEl.textContent = s.heroDesc || "";
-        if (!s.heroDesc) {
-          heroDescEl.style.display = 'none';
-        } else {
-          heroDescEl.style.display = 'block';
-        }
+        heroDescEl.textContent = currentSettings.heroDesc || "";
+        heroDescEl.style.display = currentSettings.heroDesc ? 'block' : 'none';
       }
 
       const logoBox = document.getElementById('logo-render-box');
-      if (s.logoType === 'image' && s.logoImg) {
-        logoBox.innerHTML = `<img src="${s.logoImg}" class="logo-image-render" alt="Logo"/>`;
+      if (currentSettings.logoType === 'image' && currentSettings.logoImg) {
+        logoBox.innerHTML = `<img src="${currentSettings.logoImg}" class="logo-image-render" alt="Logo"/>`;
       } else {
-        logoBox.innerHTML = `<span class="logo-monogram">${escapeHtml(s.logoText || 'P')}</span>`;
+        logoBox.innerHTML = `<span class="logo-monogram">${escapeHtml(currentSettings.logoText || 'P')}</span>`;
       }
     }
 
@@ -1805,30 +1873,27 @@
     }
 
     /* ==========================================================================
-       D. DYNAMIC CATEGORY & PRICING LOGIC
+       D. CATEGORIES & LIVE PRICING CALCULATOR
        ========================================================================== */
     let currentFilter = 'all';
 
     function renderCategoryFilterTabs() {
       const bar = document.getElementById('gallery-filter-tabs');
-      const categories = getStoredCategories();
-
       let html = `<button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="filterGallery('all', this)">All Creations</button>`;
-      categories.forEach(cat => {
+      currentCategories.forEach(cat => {
         html += `<button class="filter-btn ${currentFilter === cat.id ? 'active' : ''}" onclick="filterGallery('${cat.id}', this)">${escapeHtml(cat.name)}</button>`;
       });
       bar.innerHTML = html;
     }
 
     function populateCategoryDropdowns() {
-      const categories = getStoredCategories();
       const orderSelect = document.getElementById('cust-category');
       const slotSelect = document.getElementById('slot-category-input');
 
       let orderHtml = '';
       let slotHtml = '';
 
-      categories.forEach(cat => {
+      currentCategories.forEach(cat => {
         orderHtml += `<option value="${cat.id}">${escapeHtml(cat.name)} (Base ₹${cat.basePrice})</option>`;
         slotHtml += `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`;
       });
@@ -1849,16 +1914,14 @@
       const sizeSelect = document.getElementById('cust-size');
       const priceVal = document.getElementById('live-calculated-price');
       const breakdown = document.getElementById('price-box-breakdown');
-      const settings = getStoredSettings();
 
-      if (!settings.showPricing) {
-        priceVal.textContent = settings.pricingFallback || "Quote on Request";
+      if (!currentSettings.showPricing) {
+        priceVal.textContent = currentSettings.pricingFallback || "Quote on Request";
         breakdown.textContent = "Pricing is shared individually on WhatsApp.";
         return;
       }
 
-      const categories = getStoredCategories();
-      const selectedCat = categories.find(c => c.id === catSelect.value);
+      const selectedCat = currentCategories.find(c => c.id === catSelect.value);
       const base = selectedCat ? (Number(selectedCat.basePrice) || 0) : 0;
       const surcharge = SIZE_SURCHARGES[sizeSelect.value] || 0;
       const total = base + surcharge;
@@ -1876,24 +1939,22 @@
 
     function renderCategoryManagerTable() {
       const tbody = document.getElementById('category-table-body');
-      const categories = getStoredCategories();
-
-      tbody.innerHTML = categories.map((cat, idx) => `
+      tbody.innerHTML = currentCategories.map(cat => `
         <tr>
           <td>
-            <input type="text" class="form-control" style="padding:6px 10px; font-size:0.85rem;" value="${escapeHtml(cat.name)}" onchange="updateCategoryName(${idx}, this.value)"/>
+            <input type="text" class="form-control" style="padding:6px 10px; font-size:0.85rem;" value="${escapeHtml(cat.name)}" onchange="updateCategoryName('${cat.id}', this.value)"/>
           </td>
           <td style="width:130px;">
-            <input type="number" class="form-control" style="padding:6px 10px; font-size:0.85rem;" value="${cat.basePrice}" onchange="updateCategoryPrice(${idx}, this.value)"/>
+            <input type="number" class="form-control" style="padding:6px 10px; font-size:0.85rem;" value="${cat.basePrice}" onchange="updateCategoryPrice('${cat.id}', this.value)"/>
           </td>
           <td style="text-align:right;">
-            <button class="btn btn-dark btn-sm" style="color:#ef4444; padding:4px 8px;" onclick="deleteCategory(${idx})">🗑️ Delete</button>
+            <button class="btn btn-dark btn-sm" style="color:#ef4444; padding:4px 8px;" onclick="deleteCategory('${cat.id}')">🗑️ Delete</button>
           </td>
         </tr>
       `).join('');
     }
 
-    function addNewCategory() {
+    async function addNewCategory() {
       const nameInput = document.getElementById('new-cat-name');
       const priceInput = document.getElementById('new-cat-price');
       const name = nameInput.value.trim();
@@ -1905,70 +1966,50 @@
       }
 
       const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
-      let categories = getStoredCategories();
-      categories.push({ id, name, basePrice: price });
-      saveStoredCategories(categories);
+      showToast("Saving category to cloud...", "⏳");
+      
+      await db.collection('categories').doc(id).set({
+        id,
+        name,
+        basePrice: price
+      });
 
       nameInput.value = "";
       priceInput.value = "";
-
       renderCategoryManagerTable();
-      renderCategoryFilterTabs();
-      populateCategoryDropdowns();
-      renderGallery();
-      updateLiveOrderPrice();
-      showToast(`Category "${name}" added!`, "🏷️");
+      showToast(`Category "${name}" synced worldwide!`, "🏷️");
     }
 
-    function updateCategoryName(index, newName) {
-      let categories = getStoredCategories();
+    async function updateCategoryName(catId, newName) {
       if (!newName.trim()) return;
-      categories[index].name = newName.trim();
-      saveStoredCategories(categories);
-      renderCategoryFilterTabs();
-      populateCategoryDropdowns();
-      renderGallery();
-      showToast("Category name updated.", "✓");
+      await db.collection('categories').doc(catId).update({ name: newName.trim() });
+      showToast("Category name synced.", "✓");
     }
 
-    function updateCategoryPrice(index, newPrice) {
-      let categories = getStoredCategories();
-      categories[index].basePrice = parseInt(newPrice, 10) || 0;
-      saveStoredCategories(categories);
-      populateCategoryDropdowns();
-      updateLiveOrderPrice();
-      renderGallery();
-      showToast("Base price updated.", "✓");
+    async function updateCategoryPrice(catId, newPrice) {
+      const price = parseInt(newPrice, 10) || 0;
+      await db.collection('categories').doc(catId).update({ basePrice: price });
+      showToast("Base price synced.", "✓");
     }
 
-    function deleteCategory(index) {
-      let categories = getStoredCategories();
-      if (categories.length <= 1) {
+    async function deleteCategory(catId) {
+      if (currentCategories.length <= 1) {
         showToast("You must keep at least one category.", "⚠️");
         return;
       }
-      categories.splice(index, 1);
-      saveStoredCategories(categories);
-      renderCategoryManagerTable();
-      renderCategoryFilterTabs();
-      populateCategoryDropdowns();
-      renderGallery();
-      updateLiveOrderPrice();
-      showToast(`Category removed.`, "🗑️");
+      if (!confirm("Are you sure you want to delete this category?")) return;
+      await db.collection('categories').doc(catId).delete();
+      showToast("Category removed worldwide.", "🗑️");
     }
 
     /* ==========================================================================
-       E. GALLERY RENDERING & SLOT CARDS (ID-BASED LOOKUP)
+       E. GALLERY SHOWCASE (WITH ID-BASED LOOKUP)
        ========================================================================== */
     function renderGallery() {
       const container = document.getElementById('gallery-grid');
-      const items = getStoredGallery();
-      const settings = getStoredSettings();
-      const categories = getStoredCategories();
-
       const filtered = currentFilter === 'all' 
-        ? items 
-        : items.filter(item => item.category === currentFilter);
+        ? currentGallery 
+        : currentGallery.filter(item => item.category === currentFilter);
 
       if (filtered.length === 0) {
         container.innerHTML = `
@@ -1980,14 +2021,14 @@
       }
 
       container.innerHTML = filtered.map(item => {
-        const catObj = categories.find(c => c.id === item.category);
+        const catObj = currentCategories.find(c => c.id === item.category);
         const catName = catObj ? catObj.name : "Custom Art";
         
         let displayPrice = "";
-        if (settings.showPricing) {
+        if (currentSettings.showPricing) {
           displayPrice = item.price ? item.price : (catObj ? `Starts ₹${catObj.basePrice}` : "Quote on Request");
         } else {
-          displayPrice = settings.pricingFallback || "Quote on Request";
+          displayPrice = currentSettings.pricingFallback || "Quote on Request";
         }
 
         return `
@@ -2023,27 +2064,24 @@
     }
 
     function openLightboxById(id) {
-      const gallery = getStoredGallery();
-      const item = gallery.find(i => i.id === id);
+      const item = currentGallery.find(i => i.id === id);
       if (!item) return;
       openLightbox(item.image, item.title, item.description, item.category);
     }
 
     function selectCardForOrderById(id) {
-      const gallery = getStoredGallery();
-      const item = gallery.find(i => i.id === id);
+      const item = currentGallery.find(i => i.id === id);
       if (!item) return;
       selectCardForOrder(item.title, item.category);
     }
 
     /* ==========================================================================
-       F. OWNER AUTHENTICATION & CREDENTIALS
+       F. OWNER AUTHENTICATION
        ========================================================================== */
     function handleOwnerLogin(e) {
       e.preventDefault();
       const enteredUser = document.getElementById('owner-user-input').value.trim();
       const enteredPass = document.getElementById('owner-pass-input').value.trim();
-      const currentCreds = getStoredCreds();
 
       if (enteredUser === currentCreds.username && enteredPass === currentCreds.password) {
         sessionStorage.setItem('picify_owner_session', 'true');
@@ -2051,7 +2089,7 @@
         checkOwnerStatus();
         renderGallery();
         renderReviews();
-        showToast("Welcome Soumi! Studio Manager Active.", "✨");
+        showToast("Welcome Soumi! Cloud Studio Synced.", "✨");
         document.getElementById('owner-pass-input').value = "";
       } else {
         showToast("Incorrect Username or Password. Try again.", "⚠️");
@@ -2066,14 +2104,13 @@
       showToast("Logged out of Owner Studio.", "🔒");
     }
 
-    function handleUpdateCredentials(e) {
+    async function handleUpdateCredentials(e) {
       e.preventDefault();
       if (!isOwnerLoggedIn()) return;
 
       const user = document.getElementById('current-user-input').value.trim();
       const pass = document.getElementById('current-pass-input').value.trim();
       const newPass = document.getElementById('new-pass-input').value.trim();
-      const currentCreds = getStoredCreds();
 
       if (user !== currentCreds.username || pass !== currentCreds.password) {
         showToast("Current username or password incorrect.", "⚠️");
@@ -2085,9 +2122,14 @@
         return;
       }
 
-      localStorage.setItem('picify_creds', JSON.stringify({ username: user, password: newPass }));
+      showToast("Updating cloud credentials...", "⏳");
+      await db.collection('settings').doc('creds').set({
+        username: user,
+        password: newPass
+      });
+
       closeModal('creds-modal');
-      showToast("Credentials updated successfully!", "🔑");
+      showToast("Password updated across all devices!", "🔑");
     }
 
     /* ==========================================================================
@@ -2097,14 +2139,13 @@
 
     function openBrandingModal() {
       if (!isOwnerLoggedIn()) return;
-      const s = getStoredSettings();
-      document.getElementById('cfg-phone').value = s.phone;
-      document.getElementById('cfg-brand').value = s.brandName;
-      document.getElementById('cfg-subtitle').value = s.studioSubtitle;
-      document.getElementById('cfg-logo-type').value = s.logoType;
-      document.getElementById('cfg-logo-char').value = s.logoText;
-      document.getElementById('cfg-price-visibility').value = s.showPricing.toString();
-      document.getElementById('cfg-price-fallback').value = s.pricingFallback;
+      document.getElementById('cfg-phone').value = currentSettings.phone;
+      document.getElementById('cfg-brand').value = currentSettings.brandName;
+      document.getElementById('cfg-subtitle').value = currentSettings.studioSubtitle;
+      document.getElementById('cfg-logo-type').value = currentSettings.logoType;
+      document.getElementById('cfg-logo-char').value = currentSettings.logoText;
+      document.getElementById('cfg-price-visibility').value = currentSettings.showPricing.toString();
+      document.getElementById('cfg-price-fallback').value = currentSettings.pricingFallback;
       toggleLogoFields();
       openModal('branding-modal');
     }
@@ -2120,43 +2161,59 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(evt) {
-        tempUploadedLogoBase64 = evt.target.result;
+        // Compress logo
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > 200 || height > 200) {
+            width = 160;
+            height = 160;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          tempUploadedLogoBase64 = canvas.toDataURL('image/png');
+        };
+        img.src = evt.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    function handleSaveBranding(e) {
+    async function handleSaveBranding(e) {
       e.preventDefault();
       if (!isOwnerLoggedIn()) return;
 
-      let s = getStoredSettings();
       const cleanPhone = document.getElementById('cfg-phone').value.replace(/[^0-9]/g, '');
       if (cleanPhone.length < 10) {
         showToast("Please enter a valid 10-digit mobile number.", "⚠️");
         return;
       }
 
-      s.phone = cleanPhone;
-      s.brandName = document.getElementById('cfg-brand').value.trim();
-      s.studioSubtitle = document.getElementById('cfg-subtitle').value.trim();
-      s.logoType = document.getElementById('cfg-logo-type').value;
-      s.logoText = document.getElementById('cfg-logo-char').value.trim() || 'P';
-      if (tempUploadedLogoBase64) {
-        s.logoImg = tempUploadedLogoBase64;
-      }
-      s.showPricing = document.getElementById('cfg-price-visibility').value === 'true';
-      s.pricingFallback = document.getElementById('cfg-price-fallback').value.trim() || "Price on Request";
+      showToast("Saving branding to cloud...", "⏳");
 
-      saveStoredSettings(s);
-      applyBrandingSettings();
-      renderGallery();
-      updateLiveOrderPrice();
+      const updated = {
+        phone: cleanPhone,
+        brandName: document.getElementById('cfg-brand').value.trim(),
+        studioSubtitle: document.getElementById('cfg-subtitle').value.trim(),
+        logoType: document.getElementById('cfg-logo-type').value,
+        logoText: document.getElementById('cfg-logo-char').value.trim() || 'P',
+        logoImg: tempUploadedLogoBase64 || currentSettings.logoImg || "",
+        showPricing: document.getElementById('cfg-price-visibility').value === 'true',
+        pricingFallback: document.getElementById('cfg-price-fallback').value.trim() || "Price on Request",
+        heroTitle: currentSettings.heroTitle,
+        heroDesc: currentSettings.heroDesc || ""
+      };
+
+      await db.collection('settings').doc('branding').set(updated);
       closeModal('branding-modal');
-      showToast("Studio branding & phone updated!", "🎨");
+      showToast("Studio branding & phone synced worldwide!", "🎨");
     }
 
     /* ==========================================================================
-       H. SLOT REPLACEMENT & PHOTO UPLOADS
+       H. REAL PHOTO UPLOAD & SLOT REPLACEMENT (OPTIMIZED FOR FIRESTORE)
        ========================================================================== */
     let currentUploadBase64 = null;
 
@@ -2177,8 +2234,7 @@
 
     function openEditSlotModal(slotId) {
       if (!isOwnerLoggedIn()) return;
-      const gallery = getStoredGallery();
-      const item = gallery.find(i => i.id === slotId);
+      const item = currentGallery.find(i => i.id === slotId);
       if (!item) return;
 
       document.getElementById('upload-modal-title').textContent = "Replace Photo & Details for this Slot";
@@ -2198,6 +2254,7 @@
       openModal('upload-modal');
     }
 
+    // High quality canvas compression (max 800px) so photos stay ~60KB to 90KB and upload instantly to Firestore
     function previewSelectedImage(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -2209,7 +2266,7 @@
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 1000;
+          const maxDim = 800;
 
           if (width > height && width > maxDim) {
             height = Math.round((height * maxDim) / width);
@@ -2224,7 +2281,7 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          currentUploadBase64 = canvas.toDataURL('image/jpeg', 0.85);
+          currentUploadBase64 = canvas.toDataURL('image/jpeg', 0.75);
           document.getElementById('slot-preview-img').src = currentUploadBase64;
           document.getElementById('preview-container').style.display = 'block';
         };
@@ -2241,7 +2298,7 @@
       }
     }
 
-    function handleSaveSlotArtwork(e) {
+    async function handleSaveSlotArtwork(e) {
       e.preventDefault();
       if (!isOwnerLoggedIn()) return;
 
@@ -2255,51 +2312,46 @@
 
       const finalImage = currentUploadBase64 || urlInput || "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80";
 
-      let gallery = getStoredGallery();
+      showToast("Publishing to Google Cloud Firestore...", "⏳");
 
       if (slotId) {
-        const index = gallery.findIndex(item => item.id === slotId);
-        if (index !== -1) {
-          gallery[index] = {
-            ...gallery[index],
-            title,
-            category,
-            ribbon,
-            price,
-            description: desc,
-            image: finalImage
-          };
-        }
-        showToast("Slot artwork replaced!", "🎨");
-      } else {
-        const newItem = {
-          id: 'slot-' + Date.now(),
+        // Update existing document in Firestore
+        await db.collection('gallery').doc(slotId).update({
           title,
           category,
           ribbon,
           price,
           description: desc,
           image: finalImage
-        };
-        gallery.unshift(newItem);
-        showToast("New artwork added!", "✨");
+        });
+        showToast("Slot artwork synced worldwide!", "🎨");
+      } else {
+        // Create new artwork document in Firestore
+        const newId = 'slot_' + Date.now();
+        await db.collection('gallery').doc(newId).set({
+          id: newId,
+          title,
+          category,
+          ribbon,
+          price,
+          description: desc,
+          image: finalImage,
+          createdAt: Date.now()
+        });
+        showToast("New artwork published worldwide!", "✨");
       }
 
-      saveStoredGallery(gallery);
-      renderGallery();
       currentUploadBase64 = null;
       closeModal('upload-modal');
     }
 
-    function deleteGalleryItem(id) {
+    async function deleteGalleryItem(id) {
       if (!isOwnerLoggedIn()) return;
       if (!confirm("Are you sure you want to delete this piece?")) return;
 
-      let gallery = getStoredGallery();
-      gallery = gallery.filter(item => item.id !== id);
-      saveStoredGallery(gallery);
-      renderGallery();
-      showToast("Artwork removed.", "🗑️");
+      showToast("Removing from cloud...", "⏳");
+      await db.collection('gallery').doc(id).delete();
+      showToast("Artwork removed worldwide.", "🗑️");
     }
 
     /* ==========================================================================
@@ -2370,7 +2422,7 @@
     }
 
     /* ==========================================================================
-       J. ORDER SUBMISSION VIA WHATSAPP (WITH PHONE LOGIC)
+       J. ORDER SUBMISSION VIA WHATSAPP
        ========================================================================== */
     function selectCardForOrder(artworkTitle, catId) {
       document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
@@ -2393,12 +2445,10 @@
       const address = document.getElementById('cust-address').value.trim();
       const calculatedPrice = document.getElementById('live-calculated-price').textContent;
 
-      const categories = getStoredCategories();
-      const selectedCat = categories.find(c => c.id === catSelect.value);
+      const selectedCat = currentCategories.find(c => c.id === catSelect.value);
       const categoryName = selectedCat ? selectedCat.name : catSelect.value;
 
-      const settings = getStoredSettings();
-      const rawPhone = settings.phone || "7501454081";
+      const rawPhone = currentSettings.phone || "7501454081";
       const cleanDigits = rawPhone.replace(/[^0-9]/g, '');
       const targetPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
 
@@ -2420,7 +2470,7 @@
         text += `📍 *GPS Location:* (Not attached - refer to address above)\n`;
       }
 
-      text += `\n_Sent directly from ${settings.brandName} Official Website_`;
+      text += `\n_Sent directly from ${currentSettings.brandName} Official Website_`;
 
       const encodedUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`;
       window.open(encodedUrl, '_blank');
@@ -2432,9 +2482,7 @@
        ========================================================================== */
     function renderReviews() {
       const container = document.getElementById('feedback-grid');
-      const reviews = getStoredReviews();
-
-      container.innerHTML = reviews.map((rev, index) => `
+      container.innerHTML = currentReviews.map(rev => `
         <div class="feedback-card">
           <div class="rating-stars">${'⭐'.repeat(rev.stars || 5)}</div>
           <p class="feedback-text">"${escapeHtml(rev.text)}"</p>
@@ -2444,7 +2492,7 @@
           </div>
           ${isOwnerLoggedIn() ? `
             <div style="margin-top:10px; text-align:right;">
-              <button class="btn btn-dark btn-sm" style="color:#ef4444; font-size:0.7rem; padding:2px 8px;" onclick="deleteReview(${index})">
+              <button class="btn btn-dark btn-sm" style="color:#ef4444; font-size:0.7rem; padding:2px 8px;" onclick="deleteReview('${rev.id}')">
                 Remove Review
               </button>
             </div>
@@ -2453,36 +2501,34 @@
       `).join('');
     }
 
-    function handleReviewSubmission(e) {
+    async function handleReviewSubmission(e) {
       e.preventDefault();
       const name = document.getElementById('rev-name').value.trim();
       const stars = parseInt(document.getElementById('rev-stars').value, 10);
       const text = document.getElementById('rev-text').value.trim();
 
-      const newReview = {
+      const newId = 'rev_' + Date.now();
+      showToast("Posting review to cloud...", "⏳");
+
+      await db.collection('reviews').doc(newId).set({
+        id: newId,
         name,
         stars,
         text,
-        date: "Verified Customer"
-      };
+        date: "Verified Customer",
+        createdAt: Date.now()
+      });
 
-      let reviews = getStoredReviews();
-      reviews.unshift(newReview);
-      saveStoredReviews(reviews);
-      renderReviews();
       closeModal('review-modal');
-      showToast("Thank you for your review!", "⭐");
+      showToast("Thank you! Review published worldwide!", "⭐");
 
       document.getElementById('rev-name').value = "";
       document.getElementById('rev-text').value = "";
     }
 
-    function deleteReview(index) {
+    async function deleteReview(revId) {
       if (!isOwnerLoggedIn()) return;
-      let reviews = getStoredReviews();
-      reviews.splice(index, 1);
-      saveStoredReviews(reviews);
-      renderReviews();
+      await db.collection('reviews').doc(revId).delete();
       showToast("Review deleted.", "🗑️");
     }
 
@@ -2530,7 +2576,6 @@
     }
 
     function openCredsModal() {
-      const currentCreds = getStoredCreds();
       document.getElementById('current-user-input').value = currentCreds.username;
       document.getElementById('current-pass-input').value = "";
       document.getElementById('new-pass-input').value = "";
