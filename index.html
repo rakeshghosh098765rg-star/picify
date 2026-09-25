@@ -339,6 +339,10 @@
       font-weight: 400;
     }
 
+    .hero-desc:empty {
+      display: none;
+    }
+
     .creator-pills {
       display: flex;
       justify-content: center;
@@ -742,8 +746,8 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(3, 5, 8, 0.88);
-      backdrop-filter: blur(12px);
+      background: rgba(3, 5, 8, 0.92);
+      backdrop-filter: blur(14px);
       z-index: 999;
       display: flex;
       align-items: center;
@@ -751,7 +755,8 @@
       padding: 20px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s ease;
+      overflow-y: auto;
     }
 
     .modal-overlay.open {
@@ -770,6 +775,7 @@
       position: relative;
       max-height: 90vh;
       overflow-y: auto;
+      margin: auto;
     }
 
     .modal-close {
@@ -831,6 +837,154 @@
       font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    /* ==========================================================================
+       7B. CINEMATIC LUXE LIFT & BREATHING NEON HALO
+       ========================================================================== */
+    .lightbox-stage-container {
+      width: 100%;
+      max-width: 760px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      margin: auto;
+    }
+
+    .lightbox-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .lightbox-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      transform-origin: center center;
+    }
+
+    /* Smooth Cinematic Entrance: lifts from depth with a luminous bloom */
+    @keyframes luxeCinematicReveal {
+      0% {
+        opacity: 0;
+        transform: scale(0.86) translateY(36px);
+        filter: blur(10px) brightness(1.35);
+      }
+      70% {
+        opacity: 1;
+        transform: scale(1.015) translateY(-4px);
+        filter: blur(0px) brightness(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: brightness(1);
+      }
+    }
+
+    /* Ambient weightless floating after stabilization */
+    @keyframes gentleLevitate {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    .lightbox-stage.animate-luxe-reveal {
+      animation: 
+        luxeCinematicReveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+        gentleLevitate 4.5s ease-in-out 0.65s infinite alternate;
+    }
+
+    /* Premium Breathing Neon Halo Border */
+    .luxe-frame-wrapper {
+      position: relative;
+      padding: 3px;
+      border-radius: var(--radius-md);
+      display: inline-block;
+      max-width: 100%;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.9), rgba(255, 42, 133, 0.85), rgba(255, 200, 55, 0.7));
+      box-shadow: 
+        0 0 25px rgba(0, 240, 255, 0.35),
+        0 0 50px rgba(255, 42, 133, 0.2),
+        0 30px 60px rgba(0, 0, 0, 0.85);
+      animation: breathingAura 3.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes breathingAura {
+      0% {
+        box-shadow: 
+          0 0 20px rgba(0, 240, 255, 0.35),
+          0 0 45px rgba(255, 42, 133, 0.2),
+          0 25px 60px rgba(0, 0, 0, 0.85);
+      }
+      100% {
+        box-shadow: 
+          0 0 35px rgba(0, 240, 255, 0.55),
+          0 0 70px rgba(255, 42, 133, 0.35),
+          0 35px 75px rgba(0, 0, 0, 0.95);
+      }
+    }
+
+    .luxe-frame-inner {
+      position: relative;
+      background: #090c13;
+      border-radius: calc(var(--radius-md) - 2px);
+      overflow: hidden;
+      max-height: 65vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Elegant glass light sweep across the photo upon entry */
+    .luxe-frame-inner::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.22) 50%,
+        transparent 75%
+      );
+      pointer-events: none;
+      animation: lightSweep 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+    }
+
+    @keyframes lightSweep {
+      0% { left: -150%; }
+      100% { left: 150%; }
+    }
+
+    #lightbox-img {
+      max-width: 100%;
+      max-height: 65vh;
+      object-fit: contain;
+      display: block;
+      border-radius: calc(var(--radius-md) - 3px);
+    }
+
+    .lightbox-details {
+      margin-top: 16px;
+      padding: 14px 22px;
+      background: rgba(14, 18, 27, 0.88);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(12px);
+      width: 100%;
     }
 
     /* Footer */
@@ -923,10 +1077,7 @@
       Every Soul Deserves <br />
       <span class="glow-cyan-text">An Everlasting Glow</span>
     </h1>
-    <p class="hero-desc" id="hero-desc-render">
-      Specializing in Teachers' Day customized keepsakes, personalized "Mrs. Boss Lady" watercolor portraits, 
-      ribbon boulevard vehicle memory boards, and tailored romantic frames.
-    </p>
+    <p class="hero-desc" id="hero-desc-render"></p>
 
     <!-- Verified Studio Highlights -->
     <div class="creator-pills">
@@ -950,7 +1101,7 @@
     <div class="section-header">
       <div>
         <h2 class="section-title">Exclusive <span class="glow-pink-text">Showcase</span></h2>
-        <p class="section-subtitle">Browse handcrafted creations. Soumi can replace any slot or add new posts anytime.</p>
+        <p class="section-subtitle">Browse handcrafted creations.</p>
       </div>
       <div id="owner-upload-trigger" style="display:none;">
         <button class="btn btn-glow-pink" onclick="openNewUploadModal()">+ Add New Artwork Post</button>
@@ -1121,7 +1272,7 @@
   </footer>
 
   <!-- ==========================================================================
-       MODALS: AUTH, SLOT REPLACEMENT, CMS, REVIEWS, LIGHTBOX
+       MODALS: AUTH, CMS, REVIEWS, CINEMATIC LUXE LIGHTBOX
        ========================================================================== -->
 
   <!-- 1. OWNER LOGIN MODAL -->
@@ -1382,13 +1533,40 @@
     </div>
   </div>
 
-  <!-- 7. LIGHTBOX MODAL -->
+  <!-- 7. CINEMATIC LUXE LIGHTBOX WITH BACK OPTION -->
   <div id="lightbox-modal" class="modal-overlay" onclick="closeModal('lightbox-modal')">
-    <div class="modal-content" style="max-width:700px; padding:15px; background:#07090e; text-align:center;" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeModal('lightbox-modal')">×</button>
-      <img id="lightbox-img" src="" alt="Enlarged Artwork" style="width:100%; max-height:75vh; object-fit:contain; border-radius:8px;" />
-      <h4 id="lightbox-title" style="margin-top:14px; font-family:var(--font-art); font-size:1.2rem; color:#fff;"></h4>
-      <p id="lightbox-caption" style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;"></p>
+    <div class="lightbox-stage-container" onclick="event.stopPropagation()">
+      
+      <!-- Back Navigation Header -->
+      <div class="lightbox-nav-bar">
+        <button class="btn btn-glow-cyan btn-sm" onclick="closeModal('lightbox-modal')" style="border-radius:24px; padding:7px 22px; font-weight:700;">
+          ← Back to Showcase
+        </button>
+        <button class="modal-close" style="position:static;" onclick="closeModal('lightbox-modal')" title="Close">×</button>
+      </div>
+
+      <!-- Velvet Lift & Breathing Aura Stage -->
+      <div id="lightbox-stage" class="lightbox-stage">
+        <div class="luxe-frame-wrapper">
+          <div class="luxe-frame-inner">
+            <img id="lightbox-img" src="" alt="Enlarged Artwork" />
+          </div>
+        </div>
+        
+        <div class="lightbox-details">
+          <h4 id="lightbox-title" class="glow-cyan-text" style="font-family:var(--font-art); font-size:1.35rem; margin-bottom:6px;"></h4>
+          <p id="lightbox-caption" style="color:var(--text-muted); font-size:0.88rem; line-height:1.5;"></p>
+          <div style="margin-top:14px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-glow-pink btn-sm" onclick="orderFromLightbox()">
+              💬 Order This Custom Style
+            </button>
+            <button class="btn btn-dark btn-sm" onclick="closeModal('lightbox-modal')">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1400,8 +1578,7 @@
 
   <!-- ==========================================================================
        8. JAVASCRIPT ENGINE & CMS CONTROLLER
-       ========================================================================== */
-  -->
+       ========================================================================== -->
   <script>
     /* ==========================================================================
        A. DEFAULTS & PERSISTENCE
@@ -1423,7 +1600,7 @@
       logoText: "P",
       logoImg: "",
       heroTitle: "Every Soul Deserves <br /><span class=\"glow-cyan-text\">An Everlasting Glow</span>",
-      heroDesc: "Specializing in Teachers' Day customized keepsakes, personalized 'Mrs. Boss Lady' watercolor portraits, ribbon boulevard vehicle memory boards, and tailored romantic frames."
+      heroDesc: ""
     };
 
     // Default Dynamic Categories with Individual Base Prices
@@ -1459,7 +1636,7 @@
         category: "keepsake_board",
         ribbon: "Baby Pink Satin Bow",
         price: "₹899",
-        description: "Custom vehicle portrait featuring personalized license plate 'BR01JR2179' with urban boulevard artistic wash.",
+        description: "Custom vehicle portrait featuring personalized license plate BR01JR2179 with urban boulevard artistic wash.",
         image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80"
       },
       {
@@ -1517,7 +1694,12 @@
        ========================================================================== */
     function getStoredSettings() {
       const s = localStorage.getItem('picify_settings');
-      return s ? JSON.parse(s) : DEFAULT_SETTINGS;
+      let parsed = s ? JSON.parse(s) : DEFAULT_SETTINGS;
+      if (parsed.heroDesc && parsed.heroDesc.includes("Specializing in Teachers' Day customized keepsakes")) {
+        parsed.heroDesc = "";
+        localStorage.setItem('picify_settings', JSON.stringify(parsed));
+      }
+      return parsed;
     }
 
     function saveStoredSettings(settings) {
@@ -1580,7 +1762,16 @@
       document.getElementById('nav-brand-subtitle').textContent = s.studioSubtitle;
       document.getElementById('footer-brand-title').textContent = `${s.brandName} by Soumi Dutta`;
       document.getElementById('hero-title-render').innerHTML = s.heroTitle;
-      document.getElementById('hero-desc-render').textContent = s.heroDesc;
+      
+      const heroDescEl = document.getElementById('hero-desc-render');
+      if (heroDescEl) {
+        heroDescEl.textContent = s.heroDesc || "";
+        if (!s.heroDesc) {
+          heroDescEl.style.display = 'none';
+        } else {
+          heroDescEl.style.display = 'block';
+        }
+      }
 
       const logoBox = document.getElementById('logo-render-box');
       if (s.logoType === 'image' && s.logoImg) {
@@ -1756,7 +1947,7 @@
         showToast("You must keep at least one category.", "⚠️");
         return;
       }
-      const removed = categories.splice(index, 1);
+      categories.splice(index, 1);
       saveStoredCategories(categories);
       renderCategoryManagerTable();
       renderCategoryFilterTabs();
@@ -1767,7 +1958,7 @@
     }
 
     /* ==========================================================================
-       E. GALLERY RENDERING & SLOT CARDS
+       E. GALLERY RENDERING & SLOT CARDS (ID-BASED LOOKUP)
        ========================================================================== */
     function renderGallery() {
       const container = document.getElementById('gallery-grid');
@@ -1801,7 +1992,7 @@
 
         return `
           <div class="art-card" id="card-${item.id}">
-            <div class="art-media-wrap" onclick="openLightbox('${item.image}', '${escapeHtml(item.title)}', '${escapeHtml(item.description)}')">
+            <div class="art-media-wrap" onclick="openLightboxById('${item.id}')">
               ${item.ribbon ? `<div class="ribbon-tag">🎀 ${escapeHtml(item.ribbon)}</div>` : ''}
               <div class="category-badge">${escapeHtml(catName)}</div>
               <img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80'"/>
@@ -1811,7 +2002,7 @@
               <p class="art-description">${escapeHtml(item.description)}</p>
               <div class="art-footer">
                 <span class="art-price">${escapeHtml(displayPrice)}</span>
-                <button class="btn btn-dark btn-sm" onclick="selectCardForOrder('${escapeHtml(item.title)}', '${item.category}')">
+                <button class="btn btn-dark btn-sm" onclick="selectCardForOrderById('${item.id}')">
                   Order Similar
                 </button>
               </div>
@@ -1829,6 +2020,20 @@
           </div>
         `;
       }).join('');
+    }
+
+    function openLightboxById(id) {
+      const gallery = getStoredGallery();
+      const item = gallery.find(i => i.id === id);
+      if (!item) return;
+      openLightbox(item.image, item.title, item.description, item.category);
+    }
+
+    function selectCardForOrderById(id) {
+      const gallery = getStoredGallery();
+      const item = gallery.find(i => i.id === id);
+      if (!item) return;
+      selectCardForOrder(item.title, item.category);
     }
 
     /* ==========================================================================
@@ -1993,7 +2198,6 @@
       openModal('upload-modal');
     }
 
-    // Auto compress client photos to keep localStorage clean
     function previewSelectedImage(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -2083,6 +2287,7 @@
 
       saveStoredGallery(gallery);
       renderGallery();
+      currentUploadBase64 = null;
       closeModal('upload-modal');
     }
 
@@ -2194,11 +2399,9 @@
 
       const settings = getStoredSettings();
       const rawPhone = settings.phone || "7501454081";
-      // Ensure Indian country code 91 is prepended
       const cleanDigits = rawPhone.replace(/[^0-9]/g, '');
       const targetPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
 
-      // WhatsApp Message Formatting
       let text = `🎨 *NEW PICIFY CUSTOM ART COMMISSION* 🎨\n\n`;
       text += `👤 *Customer Name:* ${name}\n`;
       text += `📞 *Customer Phone:* ${phone}\n`;
@@ -2284,8 +2487,32 @@
     }
 
     /* ==========================================================================
-       L. MODAL HELPERS & LIGHTBOX
+       L. CINEMATIC LUXE LIGHTBOX & MODAL HELPERS
        ========================================================================== */
+    let currentLightboxTitle = "";
+    let currentLightboxCat = "";
+
+    function openLightbox(src, title, caption, catId) {
+      currentLightboxTitle = title;
+      currentLightboxCat = catId || "";
+
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox-title').textContent = title;
+      document.getElementById('lightbox-caption').textContent = caption || "Handcrafted with premium finish and custom satin accents.";
+
+      const stage = document.getElementById('lightbox-stage');
+      stage.classList.remove('animate-luxe-reveal');
+      void stage.offsetWidth; // Force DOM reflow to re-trigger the CSS animation
+      stage.classList.add('animate-luxe-reveal');
+
+      openModal('lightbox-modal');
+    }
+
+    function orderFromLightbox() {
+      closeModal('lightbox-modal');
+      selectCardForOrder(currentLightboxTitle, currentLightboxCat);
+    }
+
     function openModal(id) {
       document.getElementById(id).classList.add('open');
     }
@@ -2312,13 +2539,6 @@
 
     function openReviewModal() {
       openModal('review-modal');
-    }
-
-    function openLightbox(src, title, caption) {
-      document.getElementById('lightbox-img').src = src;
-      document.getElementById('lightbox-title').textContent = title;
-      document.getElementById('lightbox-caption').textContent = caption;
-      openModal('lightbox-modal');
     }
 
     function showToast(msg, icon = "✨") {
