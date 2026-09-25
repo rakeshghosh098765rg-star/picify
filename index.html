@@ -1583,6 +1583,7 @@
   <!-- ==========================================================================
        8. JAVASCRIPT ENGINE & FIREBASE FIRESTORE SYNC
        ========================================================================== -->
+ <!-- Replace the existing <script> block at the bottom of index.html with this: -->
   <script>
     /* ==========================================================================
        A. FIREBASE CONFIGURATION & INITIALIZATION
@@ -1600,13 +1601,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Default Owner Credentials
     const DEFAULT_CONFIG = {
       username: "s.o.u.m.i._04",
       password: "Soumi_krantikari_pronam_neben"
     };
 
-    // Default Studio Branding & WhatsApp Phone
     const DEFAULT_SETTINGS = {
       brandName: "PICIFY",
       studioSubtitle: "Soumi Dutta Studio • Majdia",
@@ -1620,7 +1619,6 @@
       heroDesc: ""
     };
 
-    // Default Dynamic Categories with Individual Base Prices
     const DEFAULT_CATEGORIES = [
       { id: "teachers_day", name: "Teachers' Day Special", basePrice: 599 },
       { id: "watercolor", name: "Watercolor Portraits", basePrice: 1250 },
@@ -1628,7 +1626,6 @@
       { id: "calligraphy", name: "Calligraphy Letters", basePrice: 450 }
     ];
 
-    // Frame Dimension Add-on Surcharges
     const SIZE_SURCHARGES = {
       "A4 Mini Glass Frame (8 x 12 in)": 0,
       "A3 Premium Keepsake Frame (12 x 18 in)": 300,
@@ -1636,7 +1633,6 @@
       "Square Desk Standee (8 x 8 in)": 150
     };
 
-    // Initial Demo Artwork Slots matching Soumi's Facebook Creations
     const DEFAULT_GALLERY = [
       {
         id: "slot-1",
@@ -1680,7 +1676,6 @@
       }
     ];
 
-    // Customer Reviews
     const DEFAULT_REVIEWS = [
       {
         id: "rev-1",
@@ -1708,14 +1703,12 @@
       }
     ];
 
-    // Runtime state synced with Firestore
     let currentGallery = [...DEFAULT_GALLERY];
     let currentCategories = [...DEFAULT_CATEGORIES];
     let currentSettings = { ...DEFAULT_SETTINGS };
     let currentReviews = [...DEFAULT_REVIEWS];
     let currentCreds = { ...DEFAULT_CONFIG };
 
-    // Live GPS State
     let capturedLocation = {
       latitude: null,
       longitude: null,
@@ -1728,102 +1721,120 @@
     }
 
     /* ==========================================================================
-       B. FIRESTORE REAL-TIME LISTENERS & CLOUD SYNC
-       ========================================================================= */
+       B. IMMEDIATE RENDER & REAL-TIME FIRESTORE SYNC
+       ========================================================================== */
     window.addEventListener('DOMContentLoaded', () => {
       initParticleCanvas();
+      // 1. Render immediately from memory so the page is never blank
+      applyBrandingSettings();
+      renderCategoryFilterTabs();
+      populateCategoryDropdowns();
+      renderGallery();
+      renderReviews();
       checkOwnerStatus();
+      updateLiveOrderPrice();
+
+      // 2. Connect to cloud database
       initFirestoreListeners();
     });
 
     function initFirestoreListeners() {
-      // 1. Settings & Branding Cloud Listener
+      // Branding Listener
       db.collection('settings').doc('branding').onSnapshot(doc => {
         if (doc.exists) {
           currentSettings = { ...DEFAULT_SETTINGS, ...doc.data() };
+          applyBrandingSettings();
+          renderGallery();
+          updateLiveOrderPrice();
         } else {
-          db.collection('settings').doc('branding').set(DEFAULT_SETTINGS);
-          currentSettings = { ...DEFAULT_SETTINGS };
+          db.collection('settings').doc('branding').set(DEFAULT_SETTINGS).catch(()=>{});
         }
-        applyBrandingSettings();
-        renderGallery();
-        updateLiveOrderPrice();
-      });
+      }, err => console.warn("Firestore branding:", err.message));
 
-      // 2. Owner Credentials Cloud Listener
+      // Creds Listener
       db.collection('settings').doc('creds').onSnapshot(doc => {
         if (doc.exists) {
           currentCreds = { ...DEFAULT_CONFIG, ...doc.data() };
         } else {
-          db.collection('settings').doc('creds').set(DEFAULT_CONFIG);
-          currentCreds = { ...DEFAULT_CONFIG };
+          db.collection('settings').doc('creds').set(DEFAULT_CONFIG).catch(()=>{});
         }
-      });
+      }, err => console.warn("Firestore creds:", err.message));
 
-      // 3. Categories Cloud Listener
+      // Categories Listener
       db.collection('categories').onSnapshot(snapshot => {
         if (!snapshot.empty) {
-          currentCategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          currentCategories = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderCategoryFilterTabs();
+          populateCategoryDropdowns();
+          renderGallery();
+          updateLiveOrderPrice();
         } else {
           seedCategories();
         }
-        renderCategoryFilterTabs();
-        populateCategoryDropdowns();
-        renderGallery();
-        updateLiveOrderPrice();
-      });
+      }, err => console.warn("Firestore categories:", err.message));
 
-      // 4. Gallery Artwork Cloud Listener (Syncs all devices)
+      // Gallery Listener
       db.collection('gallery').onSnapshot(snapshot => {
         if (!snapshot.empty) {
-          const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
           items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
           currentGallery = items;
+          renderGallery();
         } else {
           seedGallery();
         }
-        renderGallery();
-      });
+      }, err => console.warn("Firestore gallery:", err.message));
 
-      // 5. Reviews Cloud Listener
+      // Reviews Listener
       db.collection('reviews').onSnapshot(snapshot => {
         if (!snapshot.empty) {
-          const revs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const revs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
           revs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
           currentReviews = revs;
+          renderReviews();
         } else {
           seedReviews();
         }
-        renderReviews();
-      });
+      }, err => console.warn("Firestore reviews:", err.message));
     }
 
-    // Auto-seed initial demo items if Firestore collection is fresh
     async function seedGallery() {
-      const batch = db.batch();
-      DEFAULT_GALLERY.forEach(item => {
-        const docRef = db.collection('gallery').doc(item.id);
-        batch.set(docRef, item);
-      });
-      await batch.commit();
+      try {
+        const batch = db.batch();
+        DEFAULT_GALLERY.forEach(item => {
+          const docRef = db.collection('gallery').doc(item.id);
+          batch.set(docRef, item);
+        });
+        await batch.commit();
+      } catch (e) {
+        console.warn("Seeding gallery skipped:", e.message);
+      }
     }
 
     async function seedCategories() {
-      const batch = db.batch();
-      DEFAULT_CATEGORIES.forEach(cat => {
-        const docRef = db.collection('categories').doc(cat.id);
-        batch.set(docRef, cat);
-      });
-      await batch.commit();
+      try {
+        const batch = db.batch();
+        DEFAULT_CATEGORIES.forEach(cat => {
+          const docRef = db.collection('categories').doc(cat.id);
+          batch.set(docRef, cat);
+        });
+        await batch.commit();
+      } catch (e) {
+        console.warn("Seeding categories skipped:", e.message);
+      }
     }
 
     async function seedReviews() {
-      const batch = db.batch();
-      DEFAULT_REVIEWS.forEach(rev => {
-        const docRef = db.collection('reviews').doc(rev.id);
-        batch.set(docRef, rev);
-      });
-      await batch.commit();
+      try {
+        const batch = db.batch();
+        DEFAULT_REVIEWS.forEach(rev => {
+          const docRef = db.collection('reviews').doc(rev.id);
+          batch.set(docRef, rev);
+        });
+        await batch.commit();
+      } catch (e) {
+        console.warn("Seeding reviews skipped:", e.message);
+      }
     }
 
     /* ==========================================================================
@@ -1930,7 +1941,6 @@
       breakdown.textContent = `Base ₹${base} + Frame Modifier ₹${surcharge}`;
     }
 
-    /* Category CMS Modal */
     function openCategoriesModal() {
       if (!isOwnerLoggedIn()) return;
       renderCategoryManagerTable();
@@ -1968,28 +1978,35 @@
       const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
       showToast("Saving category to cloud...", "⏳");
       
-      await db.collection('categories').doc(id).set({
-        id,
-        name,
-        basePrice: price
-      });
-
-      nameInput.value = "";
-      priceInput.value = "";
-      renderCategoryManagerTable();
-      showToast(`Category "${name}" synced worldwide!`, "🏷️");
+      try {
+        await db.collection('categories').doc(id).set({ id, name, basePrice: price });
+        nameInput.value = "";
+        priceInput.value = "";
+        renderCategoryManagerTable();
+        showToast(`Category "${name}" synced!`, "🏷️");
+      } catch (e) {
+        showToast("Error saving category: " + e.message, "⚠️");
+      }
     }
 
     async function updateCategoryName(catId, newName) {
       if (!newName.trim()) return;
-      await db.collection('categories').doc(catId).update({ name: newName.trim() });
-      showToast("Category name synced.", "✓");
+      try {
+        await db.collection('categories').doc(catId).update({ name: newName.trim() });
+        showToast("Category name synced.", "✓");
+      } catch (e) {
+        showToast("Permission denied. Check Firebase rules.", "⚠️");
+      }
     }
 
     async function updateCategoryPrice(catId, newPrice) {
       const price = parseInt(newPrice, 10) || 0;
-      await db.collection('categories').doc(catId).update({ basePrice: price });
-      showToast("Base price synced.", "✓");
+      try {
+        await db.collection('categories').doc(catId).update({ basePrice: price });
+        showToast("Base price synced.", "✓");
+      } catch (e) {
+        showToast("Permission denied. Check Firebase rules.", "⚠️");
+      }
     }
 
     async function deleteCategory(catId) {
@@ -1998,8 +2015,12 @@
         return;
       }
       if (!confirm("Are you sure you want to delete this category?")) return;
-      await db.collection('categories').doc(catId).delete();
-      showToast("Category removed worldwide.", "🗑️");
+      try {
+        await db.collection('categories').doc(catId).delete();
+        showToast("Category removed worldwide.", "🗑️");
+      } catch (e) {
+        showToast("Error deleting: " + e.message, "⚠️");
+      }
     }
 
     /* ==========================================================================
@@ -2122,14 +2143,14 @@
         return;
       }
 
-      showToast("Updating cloud credentials...", "⏳");
-      await db.collection('settings').doc('creds').set({
-        username: user,
-        password: newPass
-      });
-
-      closeModal('creds-modal');
-      showToast("Password updated across all devices!", "🔑");
+      try {
+        showToast("Updating credentials...", "⏳");
+        await db.collection('settings').doc('creds').set({ username: user, password: newPass });
+        closeModal('creds-modal');
+        showToast("Password updated across all devices!", "🔑");
+      } catch (err) {
+        showToast("Error updating password: " + err.message, "⚠️");
+      }
     }
 
     /* ==========================================================================
@@ -2161,7 +2182,6 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(evt) {
-        // Compress logo
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
@@ -2192,7 +2212,7 @@
         return;
       }
 
-      showToast("Saving branding to cloud...", "⏳");
+      showToast("Saving branding...", "⏳");
 
       const updated = {
         phone: cleanPhone,
@@ -2207,13 +2227,17 @@
         heroDesc: currentSettings.heroDesc || ""
       };
 
-      await db.collection('settings').doc('branding').set(updated);
-      closeModal('branding-modal');
-      showToast("Studio branding & phone synced worldwide!", "🎨");
+      try {
+        await db.collection('settings').doc('branding').set(updated);
+        closeModal('branding-modal');
+        showToast("Studio branding synced worldwide!", "🎨");
+      } catch (err) {
+        showToast("Permission denied: " + err.message, "⚠️");
+      }
     }
 
     /* ==========================================================================
-       H. REAL PHOTO UPLOAD & SLOT REPLACEMENT (OPTIMIZED FOR FIRESTORE)
+       H. REAL PHOTO UPLOAD (AUTOMATIC CANVAS COMPRESSION FOR FIRESTORE)
        ========================================================================== */
     let currentUploadBase64 = null;
 
@@ -2254,7 +2278,6 @@
       openModal('upload-modal');
     }
 
-    // High quality canvas compression (max 800px) so photos stay ~60KB to 90KB and upload instantly to Firestore
     function previewSelectedImage(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -2312,37 +2335,38 @@
 
       const finalImage = currentUploadBase64 || urlInput || "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80";
 
-      showToast("Publishing to Google Cloud Firestore...", "⏳");
+      showToast("Publishing to Cloud...", "⏳");
 
-      if (slotId) {
-        // Update existing document in Firestore
-        await db.collection('gallery').doc(slotId).update({
-          title,
-          category,
-          ribbon,
-          price,
-          description: desc,
-          image: finalImage
-        });
-        showToast("Slot artwork synced worldwide!", "🎨");
-      } else {
-        // Create new artwork document in Firestore
-        const newId = 'slot_' + Date.now();
-        await db.collection('gallery').doc(newId).set({
-          id: newId,
-          title,
-          category,
-          ribbon,
-          price,
-          description: desc,
-          image: finalImage,
-          createdAt: Date.now()
-        });
-        showToast("New artwork published worldwide!", "✨");
+      try {
+        if (slotId) {
+          await db.collection('gallery').doc(slotId).update({
+            title,
+            category,
+            ribbon,
+            price,
+            description: desc,
+            image: finalImage
+          });
+          showToast("Slot artwork synced worldwide!", "🎨");
+        } else {
+          const newId = 'slot_' + Date.now();
+          await db.collection('gallery').doc(newId).set({
+            id: newId,
+            title,
+            category,
+            ribbon,
+            price,
+            description: desc,
+            image: finalImage,
+            createdAt: Date.now()
+          });
+          showToast("New artwork published worldwide!", "✨");
+        }
+        currentUploadBase64 = null;
+        closeModal('upload-modal');
+      } catch (err) {
+        showToast("Upload failed: " + err.message, "⚠️");
       }
-
-      currentUploadBase64 = null;
-      closeModal('upload-modal');
     }
 
     async function deleteGalleryItem(id) {
@@ -2350,8 +2374,12 @@
       if (!confirm("Are you sure you want to delete this piece?")) return;
 
       showToast("Removing from cloud...", "⏳");
-      await db.collection('gallery').doc(id).delete();
-      showToast("Artwork removed worldwide.", "🗑️");
+      try {
+        await db.collection('gallery').doc(id).delete();
+        showToast("Artwork removed worldwide.", "🗑️");
+      } catch (err) {
+        showToast("Error deleting: " + err.message, "⚠️");
+      }
     }
 
     /* ==========================================================================
@@ -2510,26 +2538,32 @@
       const newId = 'rev_' + Date.now();
       showToast("Posting review to cloud...", "⏳");
 
-      await db.collection('reviews').doc(newId).set({
-        id: newId,
-        name,
-        stars,
-        text,
-        date: "Verified Customer",
-        createdAt: Date.now()
-      });
-
-      closeModal('review-modal');
-      showToast("Thank you! Review published worldwide!", "⭐");
-
-      document.getElementById('rev-name').value = "";
-      document.getElementById('rev-text').value = "";
+      try {
+        await db.collection('reviews').doc(newId).set({
+          id: newId,
+          name,
+          stars,
+          text,
+          date: "Verified Customer",
+          createdAt: Date.now()
+        });
+        closeModal('review-modal');
+        showToast("Thank you! Review published worldwide!", "⭐");
+        document.getElementById('rev-name').value = "";
+        document.getElementById('rev-text').value = "";
+      } catch (err) {
+        showToast("Failed to post review: " + err.message, "⚠️");
+      }
     }
 
     async function deleteReview(revId) {
       if (!isOwnerLoggedIn()) return;
-      await db.collection('reviews').doc(revId).delete();
-      showToast("Review deleted.", "🗑️");
+      try {
+        await db.collection('reviews').doc(revId).delete();
+        showToast("Review deleted.", "🗑️");
+      } catch (err) {
+        showToast("Error deleting: " + err.message, "⚠️");
+      }
     }
 
     /* ==========================================================================
@@ -2548,7 +2582,7 @@
 
       const stage = document.getElementById('lightbox-stage');
       stage.classList.remove('animate-luxe-reveal');
-      void stage.offsetWidth; // Force DOM reflow to re-trigger the CSS animation
+      void stage.offsetWidth;
       stage.classList.add('animate-luxe-reveal');
 
       openModal('lightbox-modal');
